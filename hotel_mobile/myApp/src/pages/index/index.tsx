@@ -71,6 +71,7 @@ export default function Index() {
                      <NutButton nativeType="submit" block type="primary" onClick={onFinish}>
                         查询
                     </NutButton> 
+                    <NativeButton style={{ display: 'none' }} />
                 </Form>
                 <View>
                     
