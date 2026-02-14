@@ -1,28 +1,47 @@
 import React, {  useEffect, useRef,useState } from 'react'
 import Taro from '@tarojs/taro';
-import { View, Text, Button as NativeButton } from '@tarojs/components'
+import { View, Text, Button as NativeButton ,ScrollView} from '@tarojs/components'
 import { Button as NutButton ,Form,Input,Cascader, Cell,Space ,Card,VirtualList} from '@nutui/nutui-react-taro'
-import CalenderCon from './Calendar'
-import RoomNumber from './RoomNumber'
+import  api  from '../../api/index' 
+import { HotelListParams } from '../../types/api' 
 import './index.scss'
 
 export default function HotelList() {
     const state = {
-        src: '//img10.360buyimg.com/n2/s240x240_jfs/t1/210890/22/4728/163829/6163a590Eb7c6f4b5/6390526d49791cb9.jpg!q70.jpg',
+        src: 'https://tse3.mm.bing.net/th/id/OIP.NwhnQmBYKY7x0pKq6TN69AHaFj?cb=defcache2&defcache=1&rs=1&pid=ImgDetMain&o=7&rm=3',
         title:
         '666酒店',
         price: '388',
         vipPrice: '378',
-        shopDescription: '自营',
-        delivery: '厂商配送',
-        shopName: '阳澄湖大闸蟹自营店>',
+        shopDescription: '4.9分  |  1000+人评价  |  免费取消',
+        delivery: '五星级酒店',
+        shopName: '上海店>',
     }
     const goToDetail = (values) => {
-            console.log('表单数据:', values);
-            Taro.navigateTo({
-                url: '/pages/detail/index' 
-            });
-        };
+        console.log('表单数据:', values);
+        Taro.navigateTo({
+            url: '/pages/detail/index' 
+        });
+    };
+    
+    const [loading, setLoading] = useState<boolean>(false)
+    const [hotelList, setHotelList] = useState<HotelListParams[]>([])
+    const fetchList = async () =>  {
+        setLoading(true)
+        try {
+            const data = await api.getHotelList({ pageNo: 1, pageSize: 20 });
+            console.log('酒店列表数据:', data);
+            setHotelList(data)
+        } catch (error) {
+            console.error('获取酒店列表失败:', error);
+        } finally {
+            setLoading(false)
+        }
+        
+    }
+    useEffect(() => {
+        fetchList()
+    }, [])
     const [list, setList] = useState<string[]>([])
     const [pageNo, setPageNo] = useState(1)
     const isLoading = useRef(false)
@@ -64,6 +83,37 @@ export default function HotelList() {
             shopName={state.shopName}
             onClick={goToDetail}
             />
+            <ScrollView scrollY className='list-wrapper' style={{ height: '100vh' }}>
+                {hotelList.length > 0 ? (
+                    hotelList.map((item) => (
+                        <Card
+                            key={item._id}
+                            // 1. 映射图片：如果有真实字段用 item.pic，没有就用你定义的 state.src 占位
+                            src={state.src} 
+                            // 2. 映射标题
+                            title={item.hotelName}
+                            // 3. 映射价格：假设后端还没给价格，先写死或根据状态判断
+                            price={item.status === 1 ? "388" : "暂无报价"}
+                            vipPrice={item.status === 1 ? "350" : ""}
+                            // 4. 映射描述（地址）
+                            shopDescription={item.address}
+                            // 5. 映射标签（星级）
+                            delivery={item.status === 1 ? "已开业" : "筹备中"}
+                            shopName="查看详情 >"
+                            // 6. 【关键】点击事件，通过箭头函数传递当前酒店 ID
+                            onClick={() => {
+                                Taro.navigateTo({
+                                    url: `/pages/detail/index?id=${item._id}`
+                                });
+                            }}
+                        />
+                    ))
+                ) : (
+                    // 加载中或无数据的处理
+                    !loading ? <View className='empty'>暂无数据</View> : <View>加载中...</View>
+                )}
+            </ScrollView>
+            
             <VirtualList
             containerHeight={500}
             itemHeight={66}

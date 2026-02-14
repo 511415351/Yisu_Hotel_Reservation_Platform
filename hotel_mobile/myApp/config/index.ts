@@ -22,7 +22,17 @@ export default defineConfig<'vite'>(async (merge, { command, mode }) => {
           config: { selectorBlackList: [] }
         }
       }
-    }
+    },
+    h5: {
+        devServer: {
+        proxy: {
+            '/api': {
+            target: 'https://m1.apifoxmock.com/m1/7810839-7557920-default',
+            changeOrigin: true,
+            },
+        },
+        },
+    },
   }
 
   console.log('🔥 [Emergency Fix]: Forcing baseLevel 30 and disabling slicing...');

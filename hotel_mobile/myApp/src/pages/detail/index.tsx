@@ -8,6 +8,7 @@ export default function Index() {
     return (
         <View>
             <Text>这是酒店详情页面</Text>
+            
         </View>
     );
 }
