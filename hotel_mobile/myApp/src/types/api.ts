@@ -7,8 +7,10 @@ export interface HotelListParams {
 }
 
 export interface HotelParams {
-    id: string;
+    hotelId: string;
     hotelName: string;
     status: number;
     address: string;
+    hotelierName: string;
+    hotelierPhone: string;
 }

@@ -5,8 +5,8 @@ export default {
     getHotelList(params:any){
         return request.get<HotelListParams[]>('/api/hotels/gethotellist',params);
     },
-    getHotelDetail(id:string){
-        return request.get<HotelParams>('/api/hotels/gethoteldetail', { id });
+    getHotelDetail(hotelId:string){
+        return request.get<HotelParams>('/api/hotels/gethotelinfo', { hotelId });
     }
     
 };

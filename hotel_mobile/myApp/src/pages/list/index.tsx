@@ -73,16 +73,6 @@ export default function HotelList() {
     return (
         <View>
             <Text>这是酒店列表页面</Text>
-            <Card
-            src={state.src}
-            title={state.title}
-            price={state.price}
-            vipPrice={state.vipPrice}
-            shopDescription={state.shopDescription}
-            delivery={state.delivery}
-            shopName={state.shopName}
-            onClick={goToDetail}
-            />
             <ScrollView scrollY className='list-wrapper' style={{ height: '100vh' }}>
                 {hotelList.length > 0 ? (
                     hotelList.map((item) => (
@@ -102,8 +92,10 @@ export default function HotelList() {
                             shopName="查看详情 >"
                             // 6. 【关键】点击事件，通过箭头函数传递当前酒店 ID
                             onClick={() => {
+                                const hotelId = item._id; // 假设后端返回的酒店 ID 字段是 _id
+                                console.log('点击了酒店:', hotelId);
                                 Taro.navigateTo({
-                                    url: `/pages/detail/index?id=${item._id}`
+                                    url: `/pages/detail/index?hotelId=${hotelId}` // 传递酒店 ID 到详情页
                                 });
                             }}
                         />
