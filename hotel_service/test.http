@@ -1,0 +1,18 @@
+### 1. 测试首页
+GET http://localhost:3000/
+
+### 2. 测试获取酒店列表
+GET http://localhost:3000/api/hotels/gethotellist
+
+### 3. 测试添加酒店 (POST)
+POST http://localhost:3000/api/hotels/add
+Content-Type: application/json
+
+{
+    "hotelName": "xxx大酒店",
+    "address": "xx大道 88 号",
+    "status": 1
+}
+
+### 4. 测试查询详情 
+GET http://localhost:3000/api/hotels/detail/1
