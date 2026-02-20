@@ -1,12 +1,31 @@
-import React, {  useEffect, useRef,useState } from 'react'
+import {  useEffect, useRef,useState } from 'react'
 import Taro from '@tarojs/taro';
-import { View, Text, Button as NativeButton ,ScrollView} from '@tarojs/components'
-import { Button as NutButton ,Form,Input,Cascader, Cell,Space ,Card,VirtualList} from '@nutui/nutui-react-taro'
+import { View, Text ,ScrollView} from '@tarojs/components'
+import { Card,VirtualList} from '@nutui/nutui-react-taro'
 import  api  from '../../api/index' 
 import { HotelListParams } from '../../types/api' 
 import './index.scss'
+import {useRouter} from '@tarojs/taro'
 
 export default function HotelList() {
+    const router = useRouter()
+    const params = router.params || {}
+    
+    // 从路由参数中解析筛选条件
+    const searchParams = {
+        city: params.city ? decodeURIComponent(params.city) : '',
+        hotelName: params.hotelName ? decodeURIComponent(params.hotelName) : '',
+        checkInDate: params.checkInDate || '',
+        checkInTime: params.checkInTime || '',
+        checkOutDate: params.checkOutDate || '',
+        checkOutTime: params.checkOutTime || '',
+        roomNum: params.roomNum ? parseInt(params.roomNum) : 1,
+        adultNum: params.adultNum ? parseInt(params.adultNum) : 1,
+        childNum: params.childNum ? parseInt(params.childNum) : 0,
+    }
+    
+    console.log('从首页传递的筛选条件:', searchParams)
+    
     const state = {
         src: 'https://tse3.mm.bing.net/th/id/OIP.NwhnQmBYKY7x0pKq6TN69AHaFj?cb=defcache2&defcache=1&rs=1&pid=ImgDetMain&o=7&rm=3',
         title:
@@ -17,19 +36,44 @@ export default function HotelList() {
         delivery: '五星级酒店',
         shopName: '上海店>',
     }
-    const goToDetail = (values) => {
-        console.log('表单数据:', values);
-        Taro.navigateTo({
-            url: '/pages/detail/index' 
-        });
-    };
-    
     const [loading, setLoading] = useState<boolean>(false)
     const [hotelList, setHotelList] = useState<HotelListParams[]>([])
     const fetchList = async () =>  {
         setLoading(true)
         try {
-            const data = await api.getHotelList({ pageNo: 1, pageSize: 20 });
+            // 构建 API 请求参数，包含筛选条件
+            const apiParams: any = {
+                pageNo: 1,
+                pageSize: 20,
+            }
+            
+            // 添加筛选条件（如果有值）
+            if (searchParams.city) {
+                apiParams.city = searchParams.city
+            }
+            if (searchParams.hotelName) {
+                apiParams.hotelName = searchParams.hotelName
+            }
+            if (searchParams.checkInDate) {
+                apiParams.checkInDate = searchParams.checkInDate
+                apiParams.checkInTime = searchParams.checkInTime
+            }
+            if (searchParams.checkOutDate) {
+                apiParams.checkOutDate = searchParams.checkOutDate
+                apiParams.checkOutTime = searchParams.checkOutTime
+            }
+            if (searchParams.roomNum) {
+                apiParams.roomNum = searchParams.roomNum
+            }
+            if (searchParams.adultNum) {
+                apiParams.adultNum = searchParams.adultNum
+            }
+            if (searchParams.childNum !== undefined) {
+                apiParams.childNum = searchParams.childNum
+            }
+            
+            console.log('API 请求参数:', apiParams)
+            const data = await api.getHotelList(apiParams);
             console.log('酒店列表数据:', data);
             setHotelList(data)
         } catch (error) {

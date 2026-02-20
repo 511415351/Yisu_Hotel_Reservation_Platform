@@ -2,7 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { View } from '@tarojs/components';
 import { Form, InputNumber, Cell, Popup, Button } from '@nutui/nutui-react-taro';
 
-const RoomNumber = () => {
+interface RoomNumberProps {
+  onChange?: (data: {
+    roomNum: number;
+    adultNum: number;
+    childNum: number;
+  }) => void;
+}
+
+const RoomNumber: React.FC<RoomNumberProps> = ({ onChange }) => {
     const [form] = Form.useForm();
     const [visible, setVisible] = useState(false);
     const [values, setValues] = useState({ roomNum: 1, adultNum: 1, childNum: 0 });
@@ -21,7 +29,18 @@ const RoomNumber = () => {
         setValues({ ...tempValues }); // 同步数据
         setVisible(false); 
         console.log('已确认并更新值:', tempValues);
+        // 通知父组件数据变化
+        if (onChange) {
+            onChange({ ...tempValues });
+        }
     };
+
+    // 初始化时也通知父组件
+    useEffect(() => {
+        if (onChange) {
+            onChange({ ...values });
+        }
+    }, []);
   return (
     <View className="page">
       {/* 1. 外部显示的 Cell */}
@@ -29,7 +48,6 @@ const RoomNumber = () => {
         title="房间|人数"
         extra={`房间数:${values.roomNum} | 成人:${values.adultNum} | 儿童:${values.childNum}`}
         align="center"
-        isLink
         onClick={openPopup}
       />
 

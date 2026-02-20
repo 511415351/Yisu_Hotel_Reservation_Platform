@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { Cell, Calendar, DatePicker, CalendarDay } from '@nutui/nutui-react-taro'
 
 const padZero = (num: number | string, targetLength = 2) => {
@@ -9,7 +9,16 @@ const padZero = (num: number | string, targetLength = 2) => {
   return str
 }
 
-const CalendarCon = () => {
+interface CalendarConProps {
+  onChange?: (data: {
+    checkInDate: string; // 入住日期，格式：YYYY-MM-DD
+    checkInTime: string; // 入住时间，格式：HH:MM:SS
+    checkOutDate: string; // 离宿日期，格式：YYYY-MM-DD
+    checkOutTime: string; // 离宿时间，格式：HH:MM:SS
+  }) => void;
+}
+
+const CalendarCon: React.FC<CalendarConProps> = ({ onChange }) => {
   const [date, setDate] = useState<string[]>([])
   const [isVisible, setIsVisible] = useState(false)
 
@@ -32,7 +41,19 @@ const CalendarCon = () => {
     const dateArr = [...[chooseData[0][3], chooseData[1][3]]]
     setDate([...dateArr])
   }
-  const confirm = (values: (string | number)[], options: any[]) => {
+
+  // 当日期或时间变化时，通知父组件
+  useEffect(() => {
+    if (date && date.length === 2 && onChange) {
+      onChange({
+        checkInDate: date[0],
+        checkInTime: desc1,
+        checkOutDate: date[1],
+        checkOutTime: desc2,
+      })
+    }
+  }, [date, desc1, desc2, onChange])
+  const confirm = (_values: (string | number)[], options: any[]) => {
     if (desc.current === 1) {
       setDesc1(
         options.map((option) => padZero(parseInt(option.text))).join(':')
