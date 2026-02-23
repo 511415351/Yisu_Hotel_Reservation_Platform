@@ -3,17 +3,17 @@
 @testHotelId = cmlxosk030001ahjw1jfkfz7e
 @testRoomId = cmlyvbic50001ahz0rtdjme7z
 
-### 1. 用户注册 (商户)
+### 1. 用户注册 (管理员)
 POST {{baseUrl}}/api/user/register
 Content-Type: application/json
 
 {
     "username": "admin_test",
     "password": "password123",
-    "role": "merchant"
+    "role": "admin"
 }
 
-###
+### 1. 用户注册 (商户)
 POST {{baseUrl}}/api/user/register
 Content-Type: application/json
 
@@ -64,7 +64,16 @@ Content-Type: application/json
     "hoteliEmail": "wang@yisuo.com",
     "hoteliAddress": "北京市朝阳区三里屯路 1 号"
 }
+### 情况 C: 管理员修改已有酒店的基本信息
+PUT http://localhost:3000/api/hotels/creathotelinfo
+Content-Type: application/json
 
+{
+    "userId": 1,
+    "status": 1,
+    "score": 4.5,
+    "hoteliId": "{{testHotelId}}"
+}
 ### 4. 测试添加/修改酒店详细信息 (PUT)
 PUT http://localhost:3000/api/hotels/creathotelinfo/detail
 Content-Type: application/json

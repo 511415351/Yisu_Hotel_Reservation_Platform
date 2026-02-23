@@ -160,13 +160,40 @@ const saveHotelBasic = async (req, res) => {
         return res.status(400).json({ code: 400, msg: "请求体为空，请检查是否配置了 express.json()" });
     }
     try {
-        const { hoteliId, hotelName, hotelierName, hoteliEmail, hoteliAddress } = req.body;
+        const { hoteliId, hotelName, hotelierName, hoteliEmail, hoteliAddress, status, score } = req.body;
         const { userId } = req.body;
         if (!userId) {
             return res.status(401).json({ code: 401, msg: "未获取到酒店负责人ID" });
         }
+        // --- 1. 权限校验逻辑 ---
+        let canChangeStatus = false;
+        if (status !== undefined || score !== undefined) {
+            // 查询发起请求的用户信息
+            const requestingUser = await prisma.user.findUnique({
+                where: { id: parseInt(userId) }
+            });
+            // 假设角色定义为 'ADMIN' 是管理员，或者根据你的逻辑判断 (例如 requestingUser.role === 1)
+            if (requestingUser && requestingUser.role === 'admin') {
+                canChangeStatus = true;
+            } else {
+                return res.status(403).json({ code: 403, msg: "只有管理员有权修改状态或评分" });
+            }
+        }
+        const updateData = {};
+        if (hotelName !== undefined) updateData.hotelName = hotelName;
+        if (hotelierName !== undefined) updateData.hotelierName = hotelierName;
+        if (hoteliEmail !== undefined) updateData.hoteliEmail = hoteliEmail;
+        if (hoteliAddress !== undefined) updateData.address = hoteliAddress;
+        if (canChangeStatus) {
+            if (status !== undefined) updateData.status = parseInt(status);
+            if (score !== undefined) updateData.score = parseFloat(score);
+        }
+
         // 如果没有 hoteliId，说明是全新的酒店，直接 create
         if (!hoteliId) {
+            if (!hotelName || !hoteliAddress) {
+                return res.status(400).json({ code: 400, msg: "新增酒店时，酒店名称和地址不能为空" });
+            }
             const newHotel = await prisma.hotel.create({
                 data: {
                     hotelName: hotelName,
@@ -177,36 +204,44 @@ const saveHotelBasic = async (req, res) => {
                     openingTime: new Date().toISOString(), // 默认开业时间为当前时间
                     stars: 0,
                     score: 0.0,
-                    status: 0
+                    status: canChangeStatus ? parseInt(status) : 0
                 }
             });
             return res.status(200).json({ code: 200, data: newHotel, msg: "新增成功" });
         }
+        const existingHotel = await prisma.hotel.findUnique({ where: { id: hoteliId } });
 
-        // 如果有 hoteliId，执行 upsert (有则写，无则增)
-        const hotel = await prisma.hotel.upsert({
+        if (!existingHotel) {
+            return res.status(404).json({ code: 404, msg: "找不到对应的酒店ID" });
+        }
+        const updatedHotel = await prisma.hotel.update({
             where: { id: hoteliId },
-            update: {
-                hotelName,
-                hotelierName: hotelierName,
-                hoteliEmail: hoteliEmail,
-                address: hoteliAddress
-            },
-            create: {
-                id: hoteliId, // 如果是自己指定ID
-                hotelName,
-                hotelierName: hotelierName,
-                hoteliEmail: hoteliEmail,
-                address: hoteliAddress,
-                userId: parseInt(userId),
-                openingTime: new Date().toISOString(), // 默认开业时间为当前时间
-                stars: 0,
-                score: 0.0,
-                status: 0
-            }
+            data: updateData
         });
+        // // 如果有 hoteliId，执行 upsert (有则写，无则增)
+        // const hotel = await prisma.hotel.upsert({
+        //     where: { id: hoteliId },
+        //     update: {
+        //         hotelName,
+        //         hotelierName: hotelierName,
+        //         hoteliEmail: hoteliEmail,
+        //         address: hoteliAddress
+        //     },
+        //     create: {
+        //         id: hoteliId, // 如果是自己指定ID
+        //         hotelName,
+        //         hotelierName: hotelierName,
+        //         hoteliEmail: hoteliEmail,
+        //         address: hoteliAddress,
+        //         userId: parseInt(userId),
+        //         openingTime: new Date().toISOString(), // 默认开业时间为当前时间
+        //         stars: 0,
+        //         score: 0.0,
+        //         status: canChangeStatus ? parseInt(status) : 0
+        //     }
+        // });
 
-        res.status(200).json({ code: 200, data: hotel, msg: "保存成功" });
+        res.status(200).json({ code: 200, data: updatedHotel, msg: "保存成功" });
     } catch (error) {
         res.status(500).json({ code: 500, msg: error.message });
     }
