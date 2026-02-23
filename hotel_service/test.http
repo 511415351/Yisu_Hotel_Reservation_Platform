@@ -1,18 +1,119 @@
-### 1. 测试首页
-GET http://localhost:3000/
+### 变量设置
+@baseUrl = http://localhost:3000
+@testHotelId = cmlxosk030001ahjw1jfkfz7e
+@testRoomId = cmlyvbic50001ahz0rtdjme7z
 
-### 2. 测试获取酒店列表
-GET http://localhost:3000/api/hotels/gethotellist
-
-### 3. 测试添加酒店 (POST)
-POST http://localhost:3000/api/hotels/add
+### 1. 用户注册 (商户)
+POST {{baseUrl}}/api/user/register
 Content-Type: application/json
 
 {
-    "hotelName": "xxx大酒店",
-    "address": "xx大道 88 号",
-    "status": 1
+    "username": "admin_test",
+    "password": "password123",
+    "role": "merchant"
 }
 
-### 4. 测试查询详情 
-GET http://localhost:3000/api/hotels/detail/1
+###
+POST {{baseUrl}}/api/user/register
+Content-Type: application/json
+
+{
+    "username": "hotelier_test",
+    "password": "password123",
+    "role": "merchant"
+}
+
+### 2. 用户登录
+# @name login
+POST {{baseUrl}}/api/user/login
+Content-Type: application/json
+
+{
+    "username": "admin_test",
+    "password": "password123"
+}
+
+
+### 1. 测试获取酒店列表
+GET http://localhost:3000/api/hotels/gethotellist?keyword=&location=&stars=&priceRange=&tags=[1]&asParking=true
+
+### 2. 测试查询详情 
+GET http://localhost:3000/api/hotels/gethotelinfo?hotelId=cmlnl5ooq0000ahbo191hvo3y
+
+### 3. 测试添加/修改酒店基本信息 (PUT)
+### 情况 A: 修改已有酒店的基本信息
+PUT http://localhost:3000/api/hotels/creathotelinfo
+Content-Type: application/json
+
+{
+    "userId": 2,
+    "hoteliId": "{{testHotelId}}",
+    "hotelName": "宜宿大酒店 (旗舰店)",
+    "hotelierName": "张经理",
+    "hoteliEmail": "zhang@yisuo.com",
+    "hoteliAddress": "上海市浦东新区陆家嘴金融中心 88 号"
+}
+### 情况 B: 新增酒店基本信息 (不带 ID)
+PUT http://localhost:3000/api/hotels/creathotelinfo
+Content-Type: application/json
+
+{
+    "userId": 2,
+    "hotelName": "新宜宿酒店",
+    "hotelierName": "王经理",
+    "hoteliEmail": "wang@yisuo.com",
+    "hoteliAddress": "北京市朝阳区三里屯路 1 号"
+}
+
+### 4. 测试添加/修改酒店详细信息 (PUT)
+PUT http://localhost:3000/api/hotels/creathotelinfo/detail
+Content-Type: application/json
+
+{
+    "hotelId": "{{testHotelId}}",
+    "hasBreakfast": true,
+    "hasParking": true,
+    "location": "上海市浦东新区陆家嘴金融中心 88 号",
+    "nearby": "距离地铁2号线陆家嘴站步行5分钟，紧邻东方明珠",
+    "openingTime": "2020年01月",
+    "picture": "https://example.com/images/hotel_exterior.jpg",
+    "stars": 5
+}
+### 5. 测试添加/修改房间信息 (PUT)
+### 情况 A: 给指定酒店新增一个房型
+PUT http://localhost:3000/api/hotels/creatrooms
+Content-Type: application/json
+
+{
+    "hoteliID": "{{testHotelId}}",
+    "roomName": "豪华大床房",
+    "roomPrice": 599.00,
+    "roomNumber": 20,
+    "capacity": 2,
+    "roomPicture": "",
+    "bedType": "大床",
+    "bedCount": 1,
+    "hasTV": true,
+    "hasWifi": true,
+    "hasWindow": true,
+    "hasBathtub": false
+}
+### 情况 B: 修改现有的房型信息 (带 roomId)
+PUT http://localhost:3000/api/hotels/creatrooms
+Content-Type: application/json
+
+{
+    "roomId": "{{testRoomId}}",
+    "hoteliID": "{{testHotelId}}",
+    "roomName": "至尊总统套房 (已升级)",
+    "roomPrice": 8888.00,
+    "roomNumber": 2,
+    "capacity": 4,
+    "roomPicture": "https://example.com/images/room_presidential.jpg",
+    "bedType": "大床",
+    "bedCount": 2,
+    "hasTV": true,
+    "hasWifi": true,
+    "hasWindow": true,
+    "hasBathtub": true
+}

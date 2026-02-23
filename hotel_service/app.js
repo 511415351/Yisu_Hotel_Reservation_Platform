@@ -4,6 +4,7 @@ const cors = require('cors');
 const port = 3000
 
 const hotelRoutes = require('./routes/hotelRoutes');
+const userRoutes = require('./routes/user');
 
 
 app.use(cors());
@@ -14,6 +15,7 @@ app.get('/', (req, res) => {
 })
 
 app.use('/api/hotels', hotelRoutes);
+app.use('/api/user', userRoutes);
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
