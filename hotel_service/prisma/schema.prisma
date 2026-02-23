@@ -26,8 +26,8 @@ model User {
 
 model Hotel {
   id            String @id @default(cuid())
-  hotelierName  String      //
-  hoteliEmail   String      //
+  hotelierName  String      //酒店经理名
+  hoteliEmail   String      //酒店联系邮箱
   hotelName     String      //酒店名
   address       String      //地址
   stars         Int         //星级
@@ -35,6 +35,7 @@ model Hotel {
   openingTime   String      //开业时间
   imageUrl      String?     //图片
   nearby        String?     //附近设施
+  reason        String?     //不通过理由
   tags          HotelTag[] 
   status        Int      @default(1) //0：待审核；1：审核通过（上线）；2：审核未通过；3：下线
   // 一个酒店有多个房型

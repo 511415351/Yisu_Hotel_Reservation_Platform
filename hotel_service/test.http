@@ -126,3 +126,15 @@ Content-Type: application/json
     "hasWindow": true,
     "hasBathtub": true
 }
+
+### 6. 测试添加酒店审核不通过原因 (POST)
+POST http://localhost:3000/api/hotels/createreasons
+Content-Type: application/json
+
+{
+    "hotelId": "{{testHotelId}}",
+    "reason": "酒店照片不符合要求，需重新上传清晰的外观照片和房间照片。"
+}
+
+### 7. 测试获取酒店审核不通过原因 (GET)
+GET http://localhost:3000/api/hotels/getreasons?hotelId={{testHotelId}}

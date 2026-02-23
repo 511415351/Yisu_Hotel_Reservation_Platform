@@ -354,11 +354,42 @@ const saveRoom = async (req, res) => {
     }
 };
 
+const saveReason = async (req, res) => {
+    try {
+        const { hotelId, reason } = req.body;
+        const newReason = await prisma.hotel.update({
+            where: { id: hotelId },
+            data: {
+                reason: reason
+            }
+        });
+        res.status(200).json({ code: 200, data: newReason, msg: "理由添加成功" });
+    } catch (error) {
+        res.status(500).json({ code: 500, msg: "添加理由失败: " + error.message });
+    }
+};
+
+const getReasons = async (req, res) => {
+    try {
+        const { hotelId } = req.query;
+        const reasons = await prisma.hotel.findMany({
+            where: { id: hotelId },
+            select: {
+                reason: true
+            }
+        });
+        res.status(200).json({ code: 200, data: reasons, msg: "" });
+    } catch (error) {
+        res.status(500).json({ code: 500, msg: "查询理由失败: " + error.message });
+    }
+};
 // 导出
 module.exports = {
     getHotelList,
     getHotelDetail,
     saveHotelBasic,
     saveHotelDetails,
-    saveRoom
+    saveRoom,
+    saveReason,
+    getReasons
 };
