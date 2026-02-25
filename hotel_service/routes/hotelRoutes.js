@@ -4,9 +4,15 @@ const router = express.Router();
 const hotelController = require('../controllers/hotelController');
 const prisma = require('../utils/prisma');
 
+
 // 定义具体的路由
-router.get('/', hotelController.getHome);
 router.get('/gethotellist', hotelController.getHotelList);
+router.get('/gethotelinfo', hotelController.getHotelDetail);
+router.put('/creathotelinfo', hotelController.saveHotelBasic);
+router.put('/creathotelinfo/detail', hotelController.saveHotelDetails);
+router.put('/createrooms', hotelController.saveRoom);
+router.post('/createreasons', hotelController.saveReason);
+router.get('/getreasons', hotelController.getReasons);
 router.post('/add', async (req, res) => {
     console.log('收到请求体:', req.body);
     try {

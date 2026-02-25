@@ -13,9 +13,64 @@ datasource db {
   provider = "mysql"
   url = env("DATABASE_URL")
 }
+
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique  // 用户名唯一
+  password  String            // 存储加密后的哈希值
+  role      String   @default("user") // 角色：user, merchant, admin
+  createdAt DateTime @default(now())
+  hotels    Hotel[]
+}
+
 model Hotel {
-  id String @id @default(cuid())
-  hotelName  String
-  address String
-  status Int
+  id            String @id @default(cuid())
+  hotelierName  String      //酒店经理名
+  hoteliEmail   String      //酒店联系邮箱
+  hotelName     String      //酒店名
+  address       String      //地址
+  stars         Int         //星级
+  score         Decimal     //评分
+  openingTime   String      //开业时间
+  imageUrl      String? @db.Text    //图片
+  nearby        String?     //附近设施
+  reason        String?     //不通过理由
+  tags          HotelTag[] 
+  status        Int      @default(1) //0：待审核；1：审核通过（上线）；2：审核未通过；3：下线
+  // 一个酒店有多个房型
+  roomTypes RoomType[]
+
+  createdAt DateTime   @default(now())
+
+  userId        Int      // 外键，对应 User 的 id
+  user          User     @relation(fields: [userId], references: [id]) // 建立关联关系
+}
+model RoomType {
+   id          String @id @default(cuid())
+   name        String   // 例如：豪华大床房
+   price       Decimal  // 价格
+   capacity    Int      // 入住人数
+   imageUrl    String? @db.Text //图片
+  
+   // 床位信息
+   bedType     String   // 例如：大床、双人床、单人床
+   bedCount    Int      // 床数量
+  
+   // 设备信息
+   hasTV       Boolean  @default(true)
+   hasWifi     Boolean  @default(true)
+   hasWindow   Boolean  @default(true)
+   hasBathtub  Boolean  @default(false)
+   hotel       Hotel    @relation(fields: [hotelId], references: [id])
+   hotelId     String
+}
+
+model HotelTag {
+    id        Int      @id @default(autoincrement())
+    name      String   @unique // 标签名称，例如："有早餐", "免费停车", "健身房"
+    icon      String?  // 可选：存图标的类名或图标URL
+  
+    // 多对多关联：一个标签可以属于多个酒店
+    hotels    Hotel[]
 }

@@ -1,0 +1,1219 @@
+{
+  "apifoxProject": "1.0.0",
+  "$schema": {
+    "app": "apifox",
+    "type": "project",
+    "version": "1.2.0"
+  },
+  "info": {
+    "name": "易宿酒店预订平台",
+    "description": "",
+    "mockRule": {
+      "rules": [],
+      "enableSystemRule": true
+    }
+  },
+  "projectSetting": {
+    "id": "7853633",
+    "auth": {},
+    "securityScheme": {},
+    "gateway": [],
+    "language": "zh-CN",
+    "apiStatuses": [
+      "developing",
+      "testing",
+      "released",
+      "deprecated"
+    ],
+    "mockSettings": {
+      "engine": "fakerjs",
+      "defaultMockType": "responseExampleFirst"
+    },
+    "preProcessors": [],
+    "postProcessors": [],
+    "advancedSettings": {
+      "enableJsonc": false,
+      "enableBigint": false,
+      "responseValidate": true,
+      "enableTestScenarioSetting": false,
+      "enableYAPICompatScript": false,
+      "isDefaultUrlEncoding": 2,
+      "publishedDocUrlRules": {
+        "defaultRule": "RESOURCE_KEY_ONLY",
+        "resourceKeyStandard": "NEW"
+      }
+    },
+    "initialDisabledMockIds": [],
+    "servers": [
+      {
+        "id": "default",
+        "name": "默认服务",
+        "moduleId": 7105537
+      }
+    ],
+    "cloudMock": {
+      "security": "free",
+      "enable": true,
+      "tokenKey": "apifoxToken"
+    }
+  },
+  "apiCollection": [
+    {
+      "name": "根目录",
+      "id": 78133738,
+      "auth": {},
+      "securityScheme": {},
+      "parentId": 0,
+      "serverId": "",
+      "description": "",
+      "identityPattern": {
+        "httpApi": {
+          "type": "methodAndPath",
+          "bodyType": "",
+          "fields": []
+        }
+      },
+      "shareSettings": {},
+      "visibility": "SHARED",
+      "moduleId": 7105537,
+      "preProcessors": [
+        {
+          "id": "inheritProcessors",
+          "type": "inheritProcessors",
+          "data": {}
+        }
+      ],
+      "postProcessors": [
+        {
+          "id": "inheritProcessors",
+          "type": "inheritProcessors",
+          "data": {}
+        }
+      ],
+      "inheritPostProcessors": {},
+      "inheritPreProcessors": {},
+      "items": [
+        {
+          "name": "易宿酒店预订平台",
+          "id": 78133859,
+          "auth": {},
+          "securityScheme": {},
+          "parentId": 0,
+          "serverId": "",
+          "description": "",
+          "identityPattern": {
+            "httpApi": {
+              "type": "inherit",
+              "bodyType": "",
+              "fields": []
+            }
+          },
+          "shareSettings": {},
+          "visibility": "INHERITED",
+          "moduleId": 7105537,
+          "preProcessors": [
+            {
+              "id": "inheritProcessors",
+              "type": "inheritProcessors",
+              "data": {}
+            }
+          ],
+          "postProcessors": [
+            {
+              "id": "inheritProcessors",
+              "type": "inheritProcessors",
+              "data": {}
+            }
+          ],
+          "inheritPostProcessors": {},
+          "inheritPreProcessors": {},
+          "items": [
+            {
+              "name": "用户信息",
+              "id": 78133965,
+              "auth": {},
+              "securityScheme": {},
+              "parentId": 78133859,
+              "serverId": "",
+              "description": "",
+              "identityPattern": {
+                "httpApi": {
+                  "type": "inherit",
+                  "bodyType": "",
+                  "fields": []
+                }
+              },
+              "shareSettings": {},
+              "visibility": "INHERITED",
+              "moduleId": 7105537,
+              "preProcessors": [
+                {
+                  "id": "inheritProcessors",
+                  "type": "inheritProcessors",
+                  "data": {}
+                }
+              ],
+              "postProcessors": [
+                {
+                  "id": "inheritProcessors",
+                  "type": "inheritProcessors",
+                  "data": {}
+                }
+              ],
+              "inheritPostProcessors": {},
+              "inheritPreProcessors": {},
+              "items": [
+                {
+                  "name": "获取用户信息",
+                  "api": {
+                    "id": "416067614",
+                    "method": "get",
+                    "path": "/users/getUserInfo",
+                    "parameters": {},
+                    "auth": {},
+                    "securityScheme": {},
+                    "commonParameters": {
+                      "query": [],
+                      "body": [],
+                      "cookie": [],
+                      "header": []
+                    },
+                    "responses": [
+                      {
+                        "id": "106208679",
+                        "code": 200,
+                        "name": "成功",
+                        "headers": [],
+                        "jsonSchema": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "integer"
+                            },
+                            "data": {
+                              "type": "object",
+                              "properties": {
+                                "_id": {
+                                  "type": "string"
+                                },
+                                "userId": {
+                                  "type": "integer"
+                                },
+                                "userName": {
+                                  "type": "string"
+                                },
+                                "userEmail": {
+                                  "type": "string"
+                                },
+                                "mobile": {
+                                  "type": "string"
+                                },
+                                "hotel": {
+                                  "type": "string"
+                                },
+                                "state": {
+                                  "type": "integer"
+                                },
+                                "role": {
+                                  "type": "integer"
+                                },
+                                "createId": {
+                                  "type": "integer"
+                                }
+                              },
+                              "required": [
+                                "_id",
+                                "userId",
+                                "userName",
+                                "userEmail",
+                                "mobile",
+                                "hotel",
+                                "state",
+                                "role",
+                                "createId"
+                              ],
+                              "x-apifox-orders": [
+                                "_id",
+                                "userId",
+                                "userName",
+                                "userEmail",
+                                "mobile",
+                                "hotel",
+                                "state",
+                                "role",
+                                "createId"
+                              ]
+                            },
+                            "msg": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "code",
+                            "data",
+                            "msg"
+                          ],
+                          "x-apifox-orders": [
+                            "code",
+                            "data",
+                            "msg"
+                          ]
+                        },
+                        "itemSchema": {},
+                        "description": "",
+                        "contentType": "json",
+                        "mediaType": ""
+                      }
+                    ],
+                    "responseExamples": [
+                      {
+                        "name": "成功示例",
+                        "data": "{\n  \"code\": 200,\n  \"data\": {\n    \"_id\": \"655da3bf9d9a408c7dd73212\",\n    \"userId\": 1000016,\n    \"userName\": \"xxx\",\n    \"userEmail\": \"xxx@gmail.com\",\n    \"mobile\": \"18701664166\",\n    \"hotel\": \"xxx\",\n    \"state\": 1,\n    \"role\": 2,\n    \"createId\": 1000002\n  },\n  \"msg\": \"\"\n}",
+                        "responseId": "106208679"
+                      }
+                    ],
+                    "requestBody": {
+                      "type": "none",
+                      "parameters": [],
+                      "jsonSchema": {
+                        "type": "object",
+                        "properties": {},
+                        "x-apifox-orders": []
+                      },
+                      "required": true,
+                      "mediaType": "",
+                      "examples": [],
+                      "oasExtensions": ""
+                    },
+                    "description": "",
+                    "tags": [],
+                    "status": "developing",
+                    "serverId": "",
+                    "operationId": "",
+                    "sourceUrl": "",
+                    "ordering": 10,
+                    "cases": [],
+                    "mocks": [],
+                    "customApiFields": "{}",
+                    "advancedSettings": {
+                      "disabledSystemHeaders": {}
+                    },
+                    "mockScript": {},
+                    "codeSamples": [],
+                    "commonResponseStatus": {},
+                    "responseChildren": [],
+                    "visibility": "INHERITED",
+                    "moduleId": 7105537,
+                    "oasExtensions": "",
+                    "type": "http",
+                    "preProcessors": [],
+                    "postProcessors": [],
+                    "inheritPostProcessors": {},
+                    "inheritPreProcessors": {}
+                  }
+                },
+                {
+                  "name": "登录",
+                  "api": {
+                    "id": "416128380",
+                    "method": "post",
+                    "path": "/user/login",
+                    "parameters": {
+                      "query": [
+                        {
+                          "required": false,
+                          "description": "",
+                          "type": "string",
+                          "id": "tN6audQsZ7",
+                          "enable": true,
+                          "name": "userName",
+                          "example": "12345"
+                        },
+                        {
+                          "required": false,
+                          "description": "",
+                          "type": "string",
+                          "id": "jKR23zDdag",
+                          "enable": true,
+                          "name": "userPwd",
+                          "example": "abcde"
+                        }
+                      ]
+                    },
+                    "auth": {},
+                    "securityScheme": {},
+                    "commonParameters": {
+                      "query": [],
+                      "body": [],
+                      "cookie": [],
+                      "header": []
+                    },
+                    "responses": [
+                      {
+                        "id": "161094861",
+                        "code": 200,
+                        "name": "成功",
+                        "headers": [],
+                        "jsonSchema": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "integer"
+                            },
+                            "data": {
+                              "type": "string"
+                            },
+                            "msg": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "code",
+                            "data",
+                            "msg"
+                          ],
+                          "x-apifox-orders": [
+                            "code",
+                            "data",
+                            "msg"
+                          ]
+                        },
+                        "itemSchema": {},
+                        "description": "",
+                        "contentType": "json",
+                        "mediaType": ""
+                      }
+                    ],
+                    "responseExamples": [
+                      {
+                        "name": "成功示例",
+                        "data": "{\r\n    \"code\": 200,\r\n    \"data\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJJbWciOiJodHRwczovL3pvcy5hbGlwYXlvYmplY3RzLmNvbS9ybXNwb3J0YWwvamtqZ2tFZnZwVVBWeVJqVUltbmlWc2xaZldQbkp1dVoucG5nIiwiX2lkIjoiNjU1ZGEzYmY5ZDlhNDA4YzdkZDczMjEyIiwidXNlcklkIjoxMDAwMDE2LCJ1c2VyTmFtZSI6IkphY2tNYSIsInVzZXJFbWFpbCI6ImphY2ttYUBtYXJzLmNvbSIsIm1vYmlsZSI6IjE3MDExMjIxMTIyIiwiZGVwdElkIjoiIiwiZGVwdE5hbWUiOiIiLCJqb2IiOiLliY3nq6_lt6XnqIvluIgiLCJzdGF0ZSI6MSwicm9sZSI6MiwiY3JlYXRlSWQiOjEwMDAwMDIsInJvbGVMaXN0IjoiNjU1ZGJlZGIxMWMwMmM4NTk3ZGNlNzZmIn0sImlhdCI6MTcxNzQwMjU3NiwiZXhwIjoxNzE3NDI0MTc2fQ.9hafhJ-zPaUB0KPnMVQldlNWoYi7c_l6_P6tydF4CNM\",\r\n    \"msg\": \"\"\r\n}",
+                        "responseId": "161094861"
+                      }
+                    ],
+                    "requestBody": {
+                      "type": "none",
+                      "parameters": [],
+                      "required": true,
+                      "mediaType": "",
+                      "examples": [],
+                      "oasExtensions": ""
+                    },
+                    "description": "",
+                    "tags": [],
+                    "status": "developing",
+                    "serverId": "",
+                    "operationId": "",
+                    "sourceUrl": "",
+                    "ordering": 20,
+                    "cases": [],
+                    "mocks": [],
+                    "customApiFields": "{}",
+                    "advancedSettings": {
+                      "disabledSystemHeaders": {}
+                    },
+                    "mockScript": {},
+                    "codeSamples": [],
+                    "commonResponseStatus": {},
+                    "responseChildren": [],
+                    "visibility": "INHERITED",
+                    "moduleId": 7105537,
+                    "oasExtensions": "",
+                    "type": "http",
+                    "preProcessors": [],
+                    "postProcessors": [],
+                    "inheritPostProcessors": {},
+                    "inheritPreProcessors": {}
+                  }
+                },
+                {
+                  "name": "注册",
+                  "api": {
+                    "id": "416128884",
+                    "method": "post",
+                    "path": "/user/register",
+                    "parameters": {
+                      "query": [
+                        {
+                          "required": false,
+                          "description": "",
+                          "type": "string",
+                          "id": "Qc4r1IYjYC",
+                          "enable": true,
+                          "name": "userName"
+                        },
+                        {
+                          "required": false,
+                          "description": "",
+                          "type": "string",
+                          "id": "BcTZ2qEa9H",
+                          "enable": true,
+                          "name": "userPwd"
+                        },
+                        {
+                          "required": false,
+                          "description": "",
+                          "type": "string",
+                          "id": "zqIfDXeScj",
+                          "enable": true,
+                          "name": "userEmail"
+                        },
+                        {
+                          "required": false,
+                          "description": "",
+                          "type": "string",
+                          "id": "q1Yr9IO0oC",
+                          "enable": true,
+                          "name": "userType"
+                        }
+                      ]
+                    },
+                    "auth": {},
+                    "securityScheme": {},
+                    "commonParameters": {
+                      "query": [],
+                      "body": [],
+                      "cookie": [],
+                      "header": []
+                    },
+                    "responses": [
+                      {
+                        "id": "119942443",
+                        "code": 200,
+                        "name": "成功",
+                        "jsonSchema": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "integer"
+                            },
+                            "data": {
+                              "type": "string"
+                            },
+                            "msg": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "code",
+                            "data",
+                            "msg"
+                          ],
+                          "x-apifox-orders": [
+                            "code",
+                            "data",
+                            "msg"
+                          ]
+                        },
+                        "itemSchema": {},
+                        "contentType": "json"
+                      }
+                    ],
+                    "responseExamples": [
+                      {
+                        "name": "成功示例",
+                        "data": "{\r\n    \"code\": 200,\r\n    \"data\": \"\",\r\n    \"msg\": \"注册成功\"\r\n}",
+                        "responseId": "119942443"
+                      }
+                    ],
+                    "requestBody": {
+                      "type": "none",
+                      "parameters": [],
+                      "required": true,
+                      "mediaType": "",
+                      "examples": [],
+                      "oasExtensions": ""
+                    },
+                    "description": "",
+                    "tags": [],
+                    "status": "developing",
+                    "serverId": "",
+                    "operationId": "",
+                    "sourceUrl": "",
+                    "ordering": 30,
+                    "cases": [],
+                    "mocks": [],
+                    "customApiFields": "{}",
+                    "advancedSettings": {
+                      "disabledSystemHeaders": {}
+                    },
+                    "mockScript": {},
+                    "codeSamples": [],
+                    "commonResponseStatus": {},
+                    "responseChildren": [],
+                    "visibility": "INHERITED",
+                    "moduleId": 7105537,
+                    "oasExtensions": "",
+                    "type": "http",
+                    "preProcessors": [],
+                    "postProcessors": [],
+                    "inheritPostProcessors": {},
+                    "inheritPreProcessors": {}
+                  }
+                }
+              ]
+            },
+            {
+              "name": "酒店信息",
+              "id": 78134014,
+              "auth": {},
+              "securityScheme": {},
+              "parentId": 78133859,
+              "serverId": "",
+              "description": "",
+              "identityPattern": {
+                "httpApi": {
+                  "type": "inherit",
+                  "bodyType": "",
+                  "fields": []
+                }
+              },
+              "shareSettings": {},
+              "visibility": "INHERITED",
+              "moduleId": 7105537,
+              "preProcessors": [
+                {
+                  "id": "inheritProcessors",
+                  "type": "inheritProcessors",
+                  "data": {}
+                }
+              ],
+              "postProcessors": [
+                {
+                  "id": "inheritProcessors",
+                  "type": "inheritProcessors",
+                  "data": {}
+                }
+              ],
+              "inheritPostProcessors": {},
+              "inheritPreProcessors": {},
+              "items": [
+                {
+                  "name": "获取酒店列表",
+                  "api": {
+                    "id": "416124344",
+                    "method": "get",
+                    "path": "/hotels/gethotellist",
+                    "parameters": {},
+                    "auth": {},
+                    "securityScheme": {},
+                    "commonParameters": {
+                      "query": [],
+                      "body": [],
+                      "cookie": [],
+                      "header": []
+                    },
+                    "responses": [
+                      {
+                        "id": "121530603",
+                        "code": 200,
+                        "name": "成功",
+                        "jsonSchema": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "integer"
+                            },
+                            "data": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "_id": {
+                                    "type": "string"
+                                  },
+                                  "roleName": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "_id",
+                                  "roleName"
+                                ],
+                                "x-apifox-orders": [
+                                  "_id",
+                                  "roleName"
+                                ]
+                              }
+                            },
+                            "msg": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "code",
+                            "data",
+                            "msg"
+                          ],
+                          "x-apifox-orders": [
+                            "code",
+                            "data",
+                            "msg"
+                          ]
+                        },
+                        "itemSchema": {},
+                        "contentType": "json"
+                      }
+                    ],
+                    "responseExamples": [
+                      {
+                        "name": "成功示例",
+                        "data": "{\r\n    \"code\": 200,\r\n    \"data\": [\r\n        {\r\n            \"_id\": \"655dbed711c02c8597dce76b\",\r\n            \"roleName\": \"123酒店\"\r\n        },\r\n        {\r\n            \"_id\": \"655dbedb11c02c8597dce76f\",\r\n            \"roleName\": \"666酒店\"\r\n        }\r\n    ],\r\n    \"msg\": \"\"\r\n}",
+                        "responseId": "121530603"
+                      }
+                    ],
+                    "requestBody": {
+                      "type": "application/json",
+                      "parameters": [],
+                      "jsonSchema": {
+                        "type": "object",
+                        "properties": {}
+                      },
+                      "required": true,
+                      "mediaType": "",
+                      "examples": [],
+                      "oasExtensions": ""
+                    },
+                    "description": "",
+                    "tags": [],
+                    "status": "developing",
+                    "serverId": "",
+                    "operationId": "",
+                    "sourceUrl": "",
+                    "ordering": 10,
+                    "cases": [],
+                    "mocks": [],
+                    "customApiFields": "{}",
+                    "advancedSettings": {
+                      "disabledSystemHeaders": {}
+                    },
+                    "mockScript": {},
+                    "codeSamples": [],
+                    "commonResponseStatus": {},
+                    "responseChildren": [],
+                    "visibility": "INHERITED",
+                    "moduleId": 7105537,
+                    "oasExtensions": "",
+                    "type": "http",
+                    "preProcessors": [],
+                    "postProcessors": [],
+                    "inheritPostProcessors": {},
+                    "inheritPreProcessors": {}
+                  }
+                },
+                {
+                  "name": "获取酒店信息",
+                  "api": {
+                    "id": "416126204",
+                    "method": "get",
+                    "path": "/hotel/{hotelId}/gethotelinfo",
+                    "parameters": {
+                      "path": [
+                        {
+                          "id": "hotelId#0",
+                          "name": "hotelId",
+                          "required": true,
+                          "description": "",
+                          "type": "integer",
+                          "enable": true,
+                          "schema": {
+                            "type": "integer"
+                          }
+                        }
+                      ]
+                    },
+                    "auth": {},
+                    "securityScheme": {},
+                    "commonParameters": {
+                      "query": [],
+                      "body": [],
+                      "cookie": [],
+                      "header": []
+                    },
+                    "responses": [
+                      {
+                        "id": "119021896",
+                        "code": 200,
+                        "name": "成功",
+                        "jsonSchema": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "integer"
+                            },
+                            "data": {
+                              "type": "object",
+                              "properties": {
+                                "_id": {
+                                  "type": "string"
+                                },
+                                "hotelId": {
+                                  "type": "integer"
+                                },
+                                "hotelName": {
+                                  "type": "string"
+                                },
+                                "hotelierName": {
+                                  "type": "string"
+                                },
+                                "hotelierPhone": {
+                                  "type": "string"
+                                },
+                                "hotelierEmail": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "_id",
+                                "hotelId",
+                                "hotelName",
+                                "hotelierName",
+                                "hotelierPhone",
+                                "hotelierEmail"
+                              ],
+                              "x-apifox-orders": [
+                                "_id",
+                                "hotelId",
+                                "hotelName",
+                                "hotelierName",
+                                "hotelierPhone",
+                                "hotelierEmail"
+                              ]
+                            },
+                            "msg": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "code",
+                            "data",
+                            "msg"
+                          ],
+                          "x-apifox-orders": [
+                            "code",
+                            "data",
+                            "msg"
+                          ]
+                        },
+                        "itemSchema": {},
+                        "contentType": "json"
+                      }
+                    ],
+                    "responseExamples": [
+                      {
+                        "name": "成功示例",
+                        "data": "{\r\n    \"code\": 200,\r\n    \"data\": \r\n        {\r\n            \"_id\": \"655da3bf9d9a408c7dd73212\",\r\n            \"hotelId\": 1000016,\r\n            \"hotelName\": \"123酒店\",\r\n            \"hotelierName\":\"xxx\",\r\n            \"hotelierPhone\":\"15945872163\",\r\n            \"hotelierEmail\": \"123xxx@gmail.com\"\r\n        },\r\n    \"msg\": \"\"\r\n}",
+                        "responseId": "119021896"
+                      }
+                    ],
+                    "requestBody": {
+                      "type": "none",
+                      "parameters": [],
+                      "required": true,
+                      "mediaType": "",
+                      "examples": [],
+                      "oasExtensions": ""
+                    },
+                    "description": "",
+                    "tags": [],
+                    "status": "developing",
+                    "serverId": "",
+                    "operationId": "",
+                    "sourceUrl": "",
+                    "ordering": 20,
+                    "cases": [],
+                    "mocks": [],
+                    "customApiFields": "{}",
+                    "advancedSettings": {
+                      "disabledSystemHeaders": {}
+                    },
+                    "mockScript": {},
+                    "codeSamples": [],
+                    "commonResponseStatus": {},
+                    "responseChildren": [],
+                    "visibility": "INHERITED",
+                    "moduleId": 7105537,
+                    "oasExtensions": "",
+                    "type": "http",
+                    "preProcessors": [],
+                    "postProcessors": [],
+                    "inheritPostProcessors": {},
+                    "inheritPreProcessors": {}
+                  }
+                },
+                {
+                  "name": "上传酒店信息",
+                  "api": {
+                    "id": "416128077",
+                    "method": "put",
+                    "path": "/hotel/creathotelinfo",
+                    "parameters": {},
+                    "auth": {},
+                    "securityScheme": {},
+                    "commonParameters": {
+                      "query": [],
+                      "body": [],
+                      "cookie": [],
+                      "header": []
+                    },
+                    "responses": [
+                      {
+                        "id": "178717301",
+                        "code": 200,
+                        "name": "成功",
+                        "jsonSchema": {
+                          "type": "object",
+                          "properties": {
+                            "code": {
+                              "type": "integer"
+                            },
+                            "data": {
+                              "type": "string"
+                            },
+                            "msg": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "code",
+                            "data",
+                            "msg"
+                          ],
+                          "x-apifox-orders": [
+                            "code",
+                            "data",
+                            "msg"
+                          ]
+                        },
+                        "itemSchema": {},
+                        "contentType": "json"
+                      }
+                    ],
+                    "responseExamples": [
+                      {
+                        "name": "成功示例",
+                        "data": "{\r\n    \"code\": 200,\r\n    \"data\": \"\",\r\n    \"msg\": \"操作成功\"\r\n}",
+                        "responseId": "178717301"
+                      }
+                    ],
+                    "requestBody": {
+                      "type": "application/json",
+                      "parameters": [],
+                      "jsonSchema": {
+                        "type": "object",
+                        "properties": {
+                          "hotelName": {
+                            "type": "string"
+                          },
+                          "hoteliId": {
+                            "type": "string"
+                          },
+                          "hotelierName": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "hotelName",
+                          "hoteliId",
+                          "hotelierName"
+                        ],
+                        "x-apifox-orders": [
+                          "hotelName",
+                          "hoteliId",
+                          "hotelierName"
+                        ]
+                      },
+                      "required": true,
+                      "mediaType": "",
+                      "examples": [
+                        {
+                          "mediaType": "application/json",
+                          "value": "{\r\n    \"hotelName\": \"123酒店\",\r\n    \"hoteliId\": \"655dbeee11c02c8597dce776\",\r\n    \"hotelierName\": \"xxx\"\r\n}",
+                          "name": "示例 1"
+                        }
+                      ],
+                      "oasExtensions": ""
+                    },
+                    "description": "",
+                    "tags": [],
+                    "status": "developing",
+                    "serverId": "",
+                    "operationId": "",
+                    "sourceUrl": "",
+                    "ordering": 30,
+                    "cases": [],
+                    "mocks": [],
+                    "customApiFields": "{}",
+                    "advancedSettings": {
+                      "disabledSystemHeaders": {}
+                    },
+                    "mockScript": {},
+                    "codeSamples": [],
+                    "commonResponseStatus": {},
+                    "responseChildren": [],
+                    "visibility": "INHERITED",
+                    "moduleId": 7105537,
+                    "oasExtensions": "",
+                    "type": "http",
+                    "preProcessors": [],
+                    "postProcessors": [],
+                    "inheritPostProcessors": {},
+                    "inheritPreProcessors": {}
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "socketCollection": [],
+  "docCollection": [],
+  "webSocketCollection": [],
+  "socketIOCollection": [],
+  "mcpClientCollection": [],
+  "responseCollection": [
+    {
+      "_databaseId": 8458190,
+      "updatedAt": "2026-02-05T09:52:51.000Z",
+      "name": "根目录",
+      "type": "root",
+      "children": [],
+      "moduleId": 7105537,
+      "parentId": 0,
+      "id": 8458190,
+      "ordering": [],
+      "items": []
+    }
+  ],
+  "schemaCollection": [
+    {
+      "id": 18364871,
+      "name": "根目录",
+      "visibility": "SHARED",
+      "moduleId": 7105537,
+      "items": [],
+      "ordering": []
+    }
+  ],
+  "securitySchemeCollection": [
+    {
+      "id": 3335811,
+      "moduleId": 7105537,
+      "name": "根目录",
+      "items": [],
+      "ordering": []
+    }
+  ],
+  "oasComponentCollection": [],
+  "requestCollection": [
+    {
+      "name": "根目录",
+      "children": [],
+      "ordering": [
+        "requestFolder.8384679"
+      ],
+      "items": []
+    }
+  ],
+  "apiTestCaseCollection": [
+    {
+      "id": 0,
+      "name": "Root",
+      "children": [],
+      "items": []
+    }
+  ],
+  "testCaseReferences": [],
+  "environments": [],
+  "commonScripts": [],
+  "databaseConnections": [],
+  "globalVariables": [],
+  "commonParameters": null,
+  "customFunctions": [],
+  "projectTestCaseCategories": [
+    {
+      "id": 6786537,
+      "name": "正向",
+      "description": "有效的输入和正确的预期结果,代表典型的用法。"
+    },
+    {
+      "id": 6786538,
+      "name": "负向",
+      "description": "消极的、无效的输入,如缺少字段、错误的类型、不支持的方法等。"
+    },
+    {
+      "id": 6786539,
+      "name": "边界值",
+      "description": "极端或边缘条件,如最大字符串长度、空值、零、null等"
+    },
+    {
+      "id": 6786540,
+      "name": "安全性",
+      "description": "可能暴露API安全性风险的测试用例。"
+    },
+    {
+      "id": 6786541,
+      "name": "其他",
+      "description": "其他未归属的测试用例。"
+    }
+  ],
+  "projectTestCaseTags": [
+    {
+      "id": 24555754,
+      "name": "仅传必要字段",
+      "description": "仅发送具有有效值的必填字段,省略所有可选字段,以测试最小有效请求。"
+    },
+    {
+      "id": 24555755,
+      "name": "语义合法",
+      "description": "使用语法正确且在业务逻辑或域上下文中也有意义的值。"
+    },
+    {
+      "id": 24555756,
+      "name": "覆盖枚举组合",
+      "description": "对所有枚举型参数,应用正交设计系统地构建参数及其枚举值的测试用例组合,专用于测试枚举覆盖率"
+    },
+    {
+      "id": 24555757,
+      "name": "其他正向",
+      "description": "提供符合API规范的真实有效的输入,产生正确和预期的结果。"
+    },
+    {
+      "id": 24555758,
+      "name": "缺失必填字段",
+      "description": "在请求主体或参数中省略一个或多个必需字段。"
+    },
+    {
+      "id": 24555759,
+      "name": "无效值",
+      "description": "提供的值类型和格式正确,但在逻辑上对该字段无效。"
+    },
+    {
+      "id": 24555760,
+      "name": "类型错误",
+      "description": "使用数据类型不正确的值,例如发送字符串而不是整数。"
+    },
+    {
+      "id": 24555761,
+      "name": "格式错误",
+      "description": "以不正确的格式提供值,例如,错误的日期模式,格式错误的电子邮件地址。"
+    },
+    {
+      "id": 24555762,
+      "name": "语义非法",
+      "description": "使用语法正确且格式正确的值,这些值在逻辑上不可能或违反域规则。"
+    },
+    {
+      "id": 24555763,
+      "name": "其他负向",
+      "description": "提供无效或意外的输入,应触发错误处理或拒绝API。"
+    },
+    {
+      "id": 24555764,
+      "name": "Null",
+      "description": "必须是 JSON 字面量 `null`(不是空的,也不是 \"null\")。"
+    },
+    {
+      "id": 24555765,
+      "name": "零值",
+      "description": "必须是数字字面值0。"
+    },
+    {
+      "id": 24555766,
+      "name": "空值",
+      "description": "必须是\"\"。"
+    },
+    {
+      "id": 24555767,
+      "name": "极大值",
+      "description": "Max/min值 - 为数字或日期字段提供精确的最小值和最大值。"
+    },
+    {
+      "id": 24555768,
+      "name": "极小值",
+      "description": "Max/min值 - 为数字或日期字段提供精确的最小值和最大值。"
+    },
+    {
+      "id": 24555769,
+      "name": "超出最大边界值",
+      "description": "过长/过短字符串 - 提供超出允许的最小或最大边界的值。"
+    },
+    {
+      "id": 24555770,
+      "name": "超出最小边界值",
+      "description": "过长/过短字符串 - 提供超出允许的最小或最大边界的值。"
+    },
+    {
+      "id": 24555771,
+      "name": "字符串过长",
+      "description": "超出范围的值 - 提供大于允许的最大长度或小于要求的最小长度的字符串。"
+    },
+    {
+      "id": 24555772,
+      "name": "字符串过短",
+      "description": "超出范围的值 - 提供大于允许的最大长度或小于要求的最小长度的字符串。"
+    },
+    {
+      "id": 24555773,
+      "name": "对象级别授权缺失",
+      "description": "对象级别授权缺失 - 用户在没有适当授权的情况下访问或操作数据对象。"
+    },
+    {
+      "id": 24555774,
+      "name": "访问控制",
+      "description": "基于角色、权限或属性来限制用户能访问哪些资源、能执行哪些操作"
+    },
+    {
+      "id": 24555775,
+      "name": "认证失败",
+      "description": "认证失败 - 认证薄弱、配置错误或被绕过,导致未授权访问。"
+    },
+    {
+      "id": 24555776,
+      "name": "SQL注入",
+      "description": "在输入字段中插入恶意SQL代码,测试是否存在SQL注入漏洞。"
+    },
+    {
+      "id": 24555777,
+      "name": "XSS注入",
+      "description": "注入JavaScript或HTML标签来测试跨站点脚本漏洞。"
+    },
+    {
+      "id": 24555778,
+      "name": "模糊输入",
+      "description": "发送大型或随机生成的有效载荷,以测试输入的有效性和稳定性。"
+    },
+    {
+      "id": 24555779,
+      "name": "命令行注入",
+      "description": "将shell命令插入输入以测试命令执行漏洞。"
+    },
+    {
+      "id": 24555780,
+      "name": "JSON注入",
+      "description": "插入恶意或意外的JSON结构来测试解析和验证。"
+    },
+    {
+      "id": 24555781,
+      "name": "NoSQL注入",
+      "description": "提供NoSQL特定的恶意查询或操作符来测试注入漏洞。"
+    },
+    {
+      "id": 24555782,
+      "name": "其他",
+      "description": "其他未归属的测试用例。"
+    }
+  ],
+  "projectAssociations": [],
+  "moduleSettings": [
+    {
+      "id": "7105537",
+      "name": "默认模块",
+      "description": "",
+      "moduleVariables": [],
+      "openApiInfo": {}
+    }
+  ]
+}
