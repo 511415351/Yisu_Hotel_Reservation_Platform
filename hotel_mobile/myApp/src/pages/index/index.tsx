@@ -1,14 +1,13 @@
 import { useState, useRef, useMemo, useCallback, memo } from 'react'
 import Taro from '@tarojs/taro';
 import { View, Text} from '@tarojs/components'
-import { Button as NutButton, Input, Cascader, Cell } from '@nutui/nutui-react-taro'
+import { Button as NutButton, Input, Cascader, Cell, Picker } from '@nutui/nutui-react-taro'
 import CalenderCon from './Calendar'
 import RoomNumber from './RoomNumber'
 import './index.scss'
 import { Image } from '@tarojs/components'
 import AdBanner from './AdBanner';
 import promoImage from '../../assets/images/ad/1.png';
-import { Picker } from '@nutui/nutui-react-taro'
 
 interface FilterButtonsProps {
     nearby: string | null;
@@ -18,6 +17,73 @@ interface FilterButtonsProps {
     setHasBreakfast: (value: boolean) => void;
     setHasParking: (value: boolean) => void;
 }
+// 定义 Picker 组件的 Props 类型
+interface PickerProps {
+  visible: boolean;
+  onConfirm: (options: any[]) => void;
+  onClose: () => void;
+  currentValue?: number;
+}
+
+// 星级选择器
+const StarPicker = memo(({ visible, onConfirm, onClose, currentValue = 0 }: PickerProps) => {
+  const starOptions = [
+    { text: '不限', value: 0 },
+    { text: '1星', value: 1 },
+    { text: '2星', value: 2 },
+    { text: '3星', value: 3 },
+    { text: '4星', value: 4 },
+    { text: '5星', value: 5 }
+  ]
+  
+  const handleConfirm = useCallback((options: any[]) => {
+    const selected = options[0]
+    const selectedIndex = starOptions.findIndex(p => p.value === selected.value)
+    onConfirm([{ value: selected.value === 0 ? 0 : selected.value, text: selected.text, index: selectedIndex }])
+    onClose()
+  }, [onConfirm, onClose, starOptions])
+  
+  return (
+    <Picker
+      visible={visible}
+      options={starOptions}
+      defaultValue={[currentValue]}
+      onConfirm={handleConfirm}
+      onCancel={onClose}
+      onClose={onClose}
+    />
+  )
+})
+
+// 价格选择器
+const PricePicker = memo(({ visible, onConfirm, onClose, currentValue = 0 }: PickerProps) => {
+  const priceOptions = [
+    { text: '不限', value: '' },
+    { text: '200元以下', value: '0-200' },
+    { text: '201-500元', value: '201-500' },
+    { text: '501-800元', value: '501-800' },
+    { text: '800元以上', value: '801+' }
+  ]
+  
+  const handleConfirm = useCallback((options: any[]) => {
+    const selected = options[0]
+    const selectedIndex = priceOptions.findIndex(p => p.value === selected.value)
+    onConfirm([{ value: selected.value, text: selected.text, index: selectedIndex }])
+    onClose()
+  }, [onConfirm, onClose, priceOptions])
+  
+  return (
+    <Picker
+      visible={visible}
+      options={priceOptions}
+      defaultValue={[currentValue]}
+      onConfirm={handleConfirm}
+      onCancel={onClose}
+      onClose={onClose}
+    />
+  )
+})
+
 // 提取子组件 - FilterButtons
 const FilterButtons = memo(({ 
   nearby, 
@@ -76,7 +142,9 @@ const Index = () => {
         nearby: null as string | null,
         hasBreakfast: false,
         hasParking: false,
-        starText: '不限'
+        starText: '不限',
+        starIndex: 0,
+        priceIndex: 0
     })
 
     const [showStarPicker, setShowStarPicker] = useState(false)
@@ -124,7 +192,8 @@ const Index = () => {
         setFilters(prev => ({
             ...prev,
             star: selected.value === 0 ? null : selected.value,
-            starText: selected.text
+            starText: selected.text,
+            starIndex: selected.index !== undefined ? selected.index : 0
         }))
         setShowStarPicker(false)
     }, [])
@@ -133,7 +202,8 @@ const Index = () => {
         const selected = options[0]
         setFilters(prev => ({
             ...prev,
-            priceRange: selected.value
+            priceRange: selected.value,
+            priceIndex: selected.index !== undefined ? selected.index : 0
         }))
         setShowPricePicker(false)
     }, [])
@@ -217,46 +287,48 @@ const Index = () => {
                 <RoomNumber onChange={(data) => setRoomData(data)} />
 
                 <View className="filter-row">
-                    {/* 星级选择 - 下拉 */}
+                   {/* 星级选择 - 下拉 */}
                     <View className="filter-item">
-                        <Text className="filter-label">星级</Text>
-                        <View 
-                            className="filter-select"
-                            onClick={() => setShowStarPicker(true)}
-                        >
-                            <Text>{filters.starText}</Text>
-                            <Text className="arrow">▼</Text>
-                        </View>
-                        <Picker
-                            visible={showStarPicker}
-                            title="选择酒店星级"
-                            options={[starOptions]}
-                            onConfirm={handleStarConfirm}
-                            onClose={() => setShowStarPicker(false)}
+                    <Text className="filter-label">星级</Text>
+                    <View 
+                        className="filter-select"
+                        onClick={() => setShowStarPicker(true)}
+                    >
+                        <Text>{filters.starText}</Text>
+                        <Text className="arrow">▼</Text>
+                    </View>
+                    {showStarPicker && (
+                        <StarPicker
+                        visible={showStarPicker}
+                        onConfirm={handleStarConfirm}
+                        onClose={() => setShowStarPicker(false)}
+                        currentValue={filters.starIndex}
                         />
+                    )}
                     </View>
 
                     {/* 价格选择 - 下拉 */}
                     <View className="filter-item">
-                        <Text className="filter-label">价格</Text>
-                        <View 
-                            className="filter-select"
-                            onClick={() => setShowPricePicker(true)}
-                        >
-                            <Text>
-                                {filters.priceRange 
-                                    ? priceOptions.find(p => p.value === filters.priceRange)?.text || '不限' 
-                                    : '不限'}
-                            </Text>
-                            <Text className="arrow">▼</Text>
-                        </View>
-                        <Picker
-                            visible={showPricePicker}
-                            title="选择价格区间"
-                            options={[priceOptions]}
-                            onConfirm={handlePriceConfirm}
-                            onClose={() => setShowPricePicker(false)}
+                    <Text className="filter-label">价格</Text>
+                    <View 
+                        className="filter-select"
+                        onClick={() => setShowPricePicker(true)}
+                    >
+                        <Text>
+                        {filters.priceRange 
+                            ? priceOptions.find(p => p.value === filters.priceRange)?.text || '不限' 
+                            : '不限'}
+                        </Text>
+                        <Text className="arrow">▼</Text>
+                    </View>
+                    {showPricePicker && (
+                        <PricePicker
+                        visible={showPricePicker}
+                        onConfirm={handlePriceConfirm}
+                        onClose={() => setShowPricePicker(false)}
+                        currentValue={filters.priceIndex}
                         />
+                    )}
                     </View>
                 </View>
 
@@ -289,21 +361,22 @@ const Index = () => {
                 </View>
             </View>
 
-            {/* 限时特惠广告 */}
-            <View className="promo" onClick={() => {
-                Taro.navigateTo({
-                    url: '/pages/promotion/index'
-                })
-            }}>
-                <Image className="promo-img" src={promoImage} mode="aspectFill"/>
-                <View className="promo-text">
-                    <Text className="promo-title">限时特惠</Text>
-                    <Text className="promo-subtitle">精选酒店低至5折</Text>
-                </View>
-            </View>
         </View>
     )
 }
 
 // 使用 memo 包装整个组件
 export default memo(Index)
+//
+            // {/* 限时特惠广告 */}
+            // <View className="promo" onClick={() => {
+            //     Taro.navigateTo({
+            //         url: '/pages/promotion/index'
+            //     })
+            // }}>
+            //     <Image className="promo-img" src={promoImage} mode="aspectFill"/>
+            //     <View className="promo-text">
+            //         <Text className="promo-title">限时特惠</Text>
+            //         <Text className="promo-subtitle">精选酒店低至5折</Text>
+            //     </View>
+            // </View>

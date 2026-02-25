@@ -1,7 +1,7 @@
-import {  useEffect, useRef,useState } from 'react'
+import {  useEffect, useState } from 'react'
 import Taro from '@tarojs/taro';
 import { View, Text ,ScrollView} from '@tarojs/components'
-import { Card,VirtualList,Button,Tag} from '@nutui/nutui-react-taro'
+import { Card,Button,Tag} from '@nutui/nutui-react-taro'
 import  api  from '../../api/index' 
 import { HotelListParams } from '../../types/api' 
 import './index.scss'
@@ -134,35 +134,6 @@ export default function HotelList() {
         }
         
     }
-
-    const [list, setList] = useState<string[]>([])
-    const [pageNo, setPageNo] = useState(1)
-    const isLoading = useRef(false)
-    const getData = () => {
-        const data: string[] = []
-        const pageSize = 20
-        for (let i = (pageNo - 1) * pageSize; i < pageNo * pageSize; i++) {
-        const num = i > 9 ? i : `0${i}`
-        data.push(`list${num}`)
-        }
-        setList((list: string[]) => {
-        return [...list, ...data]
-        })
-        setTimeout(() => {
-        isLoading.current = false
-        }, 30)
-    }
-    const itemRender = (data: any) => {
-        return <p>{data}</p>
-    }
-    const onScroll = () => {
-        if (pageNo > 25 || isLoading.current) return
-        isLoading.current = true
-        setPageNo(pageNo + 1)
-    }
-    useEffect(() => {
-        getData()
-    }, [pageNo])
     // 酒店每一个列表项中的信息维度(酒店名/评分/地址/价格等)如有更好的用户体验可以自行定义
      // 跳转到搜索页修改条件
   const goToSearch = () => {
@@ -243,8 +214,13 @@ export default function HotelList() {
             <Text className='count'>共 {hotelList.length} 家酒店</Text>
             <Text className='sort'>默认排序 ▼</Text>
         </View>
-        <span></span>
-            <ScrollView scrollY className='list-wrapper' style={{ height: '100vh' }}>
+            <ScrollView 
+                scrollY 
+                className='list-wrapper' 
+                style={{ height: 'calc(100vh - 200px)' }}
+                enhanced
+                showScrollbar={false}
+            >
                 {hotelList.length > 0 ? (
                     hotelList.map((item) => (
                         <Card
@@ -288,14 +264,6 @@ export default function HotelList() {
                     !loading ? <View className='empty'>暂无数据</View> : <View>加载中...</View>
                 )}
             </ScrollView>
-            
-            <VirtualList
-            containerHeight={500}
-            itemHeight={66}
-            list={list}
-            itemRender={itemRender}
-            onScroll={onScroll}
-            />
         </View>
     );
 }
