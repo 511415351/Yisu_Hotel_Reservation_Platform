@@ -15,12 +15,14 @@ export default defineConfig<'vite'>(async (merge, { command, mode }) => {
     framework: 'react',
     compiler: 'vite',
     mini: {
-      baseLevel: 30,
-      postcss: {
-        pxtransform: {
-          enable: true,
-          config: { selectorBlackList: [] }
-        }
+      webpackChain (chain) {
+        chain.module
+          .rule('image')
+          .set('parser', {
+            dataUrlCondition: {
+              maxSize: 1024 // 1kb 以下才转 base64
+            }
+          })
       }
     },
     h5: {

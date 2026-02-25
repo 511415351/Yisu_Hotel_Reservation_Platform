@@ -13,4 +13,12 @@ export interface HotelParams {
     address: string;
     hotelierName: string;
     hotelierPhone: string;
+    hotelImage: string;
 }
+export interface RoomParams {
+    id: string
+    roomName: string
+    roomPicture?: string
+    price: number
+    number:number
+  }

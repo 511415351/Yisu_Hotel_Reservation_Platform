@@ -73,8 +73,9 @@ export default function HotelList() {
             }
             
             console.log('API 请求参数:', apiParams)
-            const data = await api.getHotelList(apiParams);
+            let data = await api.getHotelList(apiParams);
             console.log('酒店列表数据:', data);
+            data = data.filter((item: any) => item.address.includes(searchParams.city));
             setHotelList(data)
         } catch (error) {
             console.error('获取酒店列表失败:', error);
