@@ -6,17 +6,32 @@ const prisma = require('../utils/prisma');
 const getHotelList = async (req, res) => {
     try {
         const {
+            userId,
             location,
             keyword,
             stars,
+            score,
             priceRange,
             hasParking,
             hasBreakfast
         } = req.query;
         console.log("收到的查询参数:", req.query);
-        let whereClause = {
-            status: 1 // 仅查询启用状态的酒店
-        };
+        let whereClause = {};
+        if (userId) {
+            const parsedUserId = parseInt(userId);
+            const requestingUser = await prisma.user.findUnique({
+                where: { id: parsedUserId }
+            });
+            // 如果是普通用户，只能看自己的酒店
+            if (requestingUser && requestingUser.role !== 'admin') {
+                whereClause.userId = parsedUserId; // 必须是整数
+            }
+            // 如果是 admin，whereClause 保持为空对象，代表查询所有
+        } else {
+            // 如果没传 userId，只查已启用的
+            whereClause.status = 1;
+        }
+
         if (location) {
             whereClause.address = {
                 contains: location
@@ -35,6 +50,14 @@ const getHotelList = async (req, res) => {
             if (!isNaN(starNum)) {
                 whereClause.stars = {
                     gte: starNum
+                };
+            }
+        }
+        if (score) {
+            const scoreNum = Number(score);
+            if (!isNaN(scoreNum)) {
+                whereClause.score = {
+                    gte: scoreNum
                 };
             }
         }
@@ -60,6 +83,7 @@ const getHotelList = async (req, res) => {
 
         const formattedData = hotels.map(hotel => {
             return {
+                userId: hotel.userId,
                 _id: hotel.id,
                 hotelName: hotel.hotelName,
                 status: hotel.status || 0,
@@ -126,8 +150,17 @@ const getHotelDetail = async (req, res) => {
             //hotelierName: hotel.managerName || "管理员", 
             hotelierPhone: hotel.phone || "",
             hotelierEmail: hotel.email || "",
+            openingTime: hotel.openingTime,
+            address: hotel.address,
+            stars: hotel.stars,
+            score: hotel.score,
+            imageUrl: hotel.imageUrl || "",
+            hasBreakfast: hotel.tags ? hotel.tags.includes("含早餐") : false,
+            hasParking: hotel.tags ? hotel.tags.includes("免费停车") : false,
+            nearby: hotel.nearby || "",
             hotelRoom: (hotel.roomTypes || []).map(room => ({
                 id: room.id.toString(),
+                hotelId: hotel.id.toString(),
                 roomName: room.name,
                 roomPrice: room.price.toString(),
                 number: room.capacity ? room.capacity.toString() : "0",
@@ -155,12 +188,12 @@ const getHotelDetail = async (req, res) => {
     }
 };
 const saveHotelBasic = async (req, res) => {
-    console.log("Receive body:", req.body);
+    console.log("saveReceive body:", req.body);
     if (!req.body) {
         return res.status(400).json({ code: 400, msg: "请求体为空，请检查是否配置了 express.json()" });
     }
     try {
-        const { hoteliId, hotelName, hotelierName, hoteliEmail, hoteliAddress, status, score } = req.body;
+        const { hotelId, hotelName, hotelierName, hotelEmail, hotelAddress, status, score } = req.body;
         const { userId } = req.body;
         if (!userId) {
             return res.status(401).json({ code: 401, msg: "未获取到酒店负责人ID" });
@@ -182,25 +215,28 @@ const saveHotelBasic = async (req, res) => {
         const updateData = {};
         if (hotelName !== undefined) updateData.hotelName = hotelName;
         if (hotelierName !== undefined) updateData.hotelierName = hotelierName;
-        if (hoteliEmail !== undefined) updateData.hoteliEmail = hoteliEmail;
-        if (hoteliAddress !== undefined) updateData.address = hoteliAddress;
+        if (hotelEmail !== undefined) updateData.hotelEmail = hotelEmail;
+        if (hotelAddress !== undefined) updateData.address = hotelAddress;
         if (canChangeStatus) {
             if (status !== undefined) updateData.status = parseInt(status);
             if (score !== undefined) updateData.score = parseFloat(score);
         }
+        else {
+            updateData.status = 0; // 非管理员不能修改状态，默认为 0（未启用）
+        }
 
-        // 如果没有 hoteliId，说明是全新的酒店，直接 create
-        if (!hoteliId) {
-            if (!hotelName || !hoteliAddress) {
+        // 如果没有 hotelId，说明是全新的酒店，直接 create
+        if (!hotelId) {
+            if (!hotelName || !hotelAddress) {
                 return res.status(400).json({ code: 400, msg: "新增酒店时，酒店名称和地址不能为空" });
             }
             const newHotel = await prisma.hotel.create({
                 data: {
                     hotelName: hotelName,
                     hotelierName: hotelierName,
-                    hoteliEmail: hoteliEmail,
+                    hotelEmail: hotelEmail,
                     userId: parseInt(userId),
-                    address: hoteliAddress,
+                    address: hotelAddress,
                     openingTime: new Date().toISOString(), // 默认开业时间为当前时间
                     stars: 0,
                     score: 0.0,
@@ -209,16 +245,16 @@ const saveHotelBasic = async (req, res) => {
             });
             return res.status(200).json({ code: 200, data: newHotel, msg: "新增成功" });
         }
-        const existingHotel = await prisma.hotel.findUnique({ where: { id: hoteliId } });
+        const existingHotel = await prisma.hotel.findUnique({ where: { id: hotelId } });
 
         if (!existingHotel) {
             return res.status(404).json({ code: 404, msg: "找不到对应的酒店ID" });
         }
         const updatedHotel = await prisma.hotel.update({
-            where: { id: hoteliId },
+            where: { id: hotelId },
             data: updateData
         });
-        // // 如果有 hoteliId，执行 upsert (有则写，无则增)
+        // // 如果有 hotelId，执行 upsert (有则写，无则增)
         // const hotel = await prisma.hotel.upsert({
         //     where: { id: hoteliId },
         //     update: {
@@ -249,7 +285,7 @@ const saveHotelBasic = async (req, res) => {
 
 const saveHotelDetails = async (req, res) => {
     try {
-        const { hotelId, hasBreakfast, hasParking, location, nearby, openingTime, picture, stars } = req.body;
+        const { hotelId, hasBreakfast, hasParking, location, nearby, openingTime, imageUrl, stars } = req.body;
         const tagsAction = {
             connectOrCreate: [],
             disconnect: []
@@ -278,7 +314,7 @@ const saveHotelDetails = async (req, res) => {
                 address: location,
                 nearby: nearby || null,
                 openingTime: openingTime,
-                imageUrl: picture,
+                imageUrl: imageUrl,
                 stars: stars,
                 tags: tagsAction
             },
@@ -296,8 +332,8 @@ const saveHotelDetails = async (req, res) => {
 const saveRoom = async (req, res) => {
     try {
         const {
-            roomId, // 注意：建议前端在修改时传这个房间的唯一ID
-            hoteliID,
+            id, // 注意：建议前端在修改时传这个房间的唯一ID
+            hotelID,
             roomName,
             roomPrice,
             capacity,
@@ -309,11 +345,11 @@ const saveRoom = async (req, res) => {
             hasWindow,
             hasBathtub
         } = req.body;
-
+        console.log("Received room data:", req.body);
         // 情况 A: 修改现有房间 (通过 roomId)
-        if (roomId) {
+        if (id) {
             const updatedRoom = await prisma.roomType.update({
-                where: { id: roomId },
+                where: { id: id },
                 data: {
                     name: roomName,
                     price: parseFloat(roomPrice),
@@ -329,11 +365,13 @@ const saveRoom = async (req, res) => {
             });
             return res.status(200).json({ code: 200, data: updatedRoom, msg: "房间修改成功" });
         }
-
+        if (!hotelId) {
+            return res.status(400).json({ code: 400, msg: "新增房间必须提供 hotelId" });
+        }
         // 情况 B: 新增房间 (到指定酒店下)
         const newRoom = await prisma.roomType.create({
             data: {
-                hotelId: hoteliID,
+                hotelId: hotelId,
                 name: roomName,
                 price: parseFloat(roomPrice),
                 capacity: parseInt(capacity),
@@ -357,6 +395,10 @@ const saveRoom = async (req, res) => {
 const saveReason = async (req, res) => {
     try {
         const { hotelId, reason } = req.body;
+        console.log("Received reason data:", req.body);
+        if (!hotelId || !reason) {
+            return res.status(400).json({ code: 400, msg: "参数错误：hotelId 和 reason 都不能为空" });
+        }
         const newReason = await prisma.hotel.update({
             where: { id: hotelId },
             data: {

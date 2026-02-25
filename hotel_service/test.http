@@ -18,8 +18,8 @@ POST {{baseUrl}}/api/user/register
 Content-Type: application/json
 
 {
-    "username": "hotelier_test",
-    "password": "password123",
+    "username": "SunshineSeeker",
+    "password": "SunshineSeeker123",
     "role": "merchant"
 }
 
@@ -35,10 +35,10 @@ Content-Type: application/json
 
 
 ### 1. 测试获取酒店列表
-GET http://localhost:3000/api/hotels/gethotellist?keyword=&location=&stars=&priceRange=&tags=[1]&asParking=true
+GET http://localhost:3000/api/hotels/gethotellist?userId=2&keyword=&location=&stars=&score=&priceRange=&tags=[1]&asParking=true
 
 ### 2. 测试查询详情 
-GET http://localhost:3000/api/hotels/gethotelinfo?hotelId=cmlnl5ooq0000ahbo191hvo3y
+GET http://localhost:3000/api/hotels/gethotelinfo?hotelId={{testHotelId}}
 
 ### 3. 测试添加/修改酒店基本信息 (PUT)
 ### 情况 A: 修改已有酒店的基本信息

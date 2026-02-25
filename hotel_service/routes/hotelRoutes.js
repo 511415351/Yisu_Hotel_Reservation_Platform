@@ -10,7 +10,7 @@ router.get('/gethotellist', hotelController.getHotelList);
 router.get('/gethotelinfo', hotelController.getHotelDetail);
 router.put('/creathotelinfo', hotelController.saveHotelBasic);
 router.put('/creathotelinfo/detail', hotelController.saveHotelDetails);
-router.put('/creatrooms', hotelController.saveRoom);
+router.put('/createrooms', hotelController.saveRoom);
 router.post('/createreasons', hotelController.saveReason);
 router.get('/getreasons', hotelController.getReasons);
 router.post('/add', async (req, res) => {
