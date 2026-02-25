@@ -78,10 +78,15 @@ const getHotelList = async (req, res) => {
         }
 
         const hotels = await prisma.hotel.findMany({
-            where: whereClause
+            where: whereClause,
+            include: {
+                roomTypes: true // 确保你的 Prisma Schema 里的关联名称是 roomTypes
+            }
         });
 
         const formattedData = hotels.map(hotel => {
+            const prices = hotel.roomTypes.map(room => room.price);
+            const lowestPrice = prices.length > 0 ? Math.min(...prices) : null;
             return {
                 userId: hotel.userId,
                 _id: hotel.id,
@@ -93,7 +98,8 @@ const getHotelList = async (req, res) => {
                 imageUrl: hotel.imageUrl || "",
                 // --- 修复点：如果 tags 已经是字符串数组，直接返回即可 ---
                 // --- 如果 tags 里面存的是对象，请先确保 tags 不为空 ---
-                tags: Array.isArray(hotel.tags) ? hotel.tags : []
+                tags: Array.isArray(hotel.tags) ? hotel.tags : [],
+                lowestPrice: lowestPrice
             };
         });
         res.status(200).json({
@@ -164,6 +170,7 @@ const getHotelDetail = async (req, res) => {
                 roomName: room.name,
                 roomPrice: room.price.toString(),
                 number: room.capacity ? room.capacity.toString() : "0",
+                imageUrl: room.imageUrl || "",
                 hasTV: room.hasTV || false,
                 hasWifi: room.hasWifi || false,
                 hasWindow: room.hasWindow || false,
@@ -192,100 +199,120 @@ const saveHotelBasic = async (req, res) => {
     if (!req.body) {
         return res.status(400).json({ code: 400, msg: "请求体为空，请检查是否配置了 express.json()" });
     }
+
     try {
-        const { hotelId, hotelName, hotelierName, hotelEmail, hotelAddress, status, score } = req.body;
-        const { userId } = req.body;
+        const {
+            hotelId, hotelName, hotelierName, hotelierEmail, address,
+            nearby, openingTime, imageUrl, status, score, stars,
+            hasBreakfast, hasParking, userId
+        } = req.body;
+
         if (!userId) {
             return res.status(401).json({ code: 401, msg: "未获取到酒店负责人ID" });
         }
+
         // --- 1. 权限校验逻辑 ---
         let canChangeStatus = false;
         if (status !== undefined || score !== undefined) {
-            // 查询发起请求的用户信息
             const requestingUser = await prisma.user.findUnique({
                 where: { id: parseInt(userId) }
             });
-            // 假设角色定义为 'ADMIN' 是管理员，或者根据你的逻辑判断 (例如 requestingUser.role === 1)
             if (requestingUser && requestingUser.role === 'admin') {
                 canChangeStatus = true;
-            } else {
+            } else if (status !== undefined || score !== undefined) {
                 return res.status(403).json({ code: 403, msg: "只有管理员有权修改状态或评分" });
             }
         }
+
+        // --- 2. 构造基础数据对象 ---
         const updateData = {};
         if (hotelName !== undefined) updateData.hotelName = hotelName;
         if (hotelierName !== undefined) updateData.hotelierName = hotelierName;
-        if (hotelEmail !== undefined) updateData.hotelEmail = hotelEmail;
-        if (hotelAddress !== undefined) updateData.address = hotelAddress;
+        if (hotelierEmail !== undefined) updateData.hoteliEmail = hotelierEmail;
+        if (address !== undefined) updateData.address = address;
+        if (nearby !== undefined) updateData.nearby = nearby;
+        if (openingTime !== undefined) updateData.openingTime = openingTime;
+        if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
+        if (stars !== undefined) updateData.stars = parseInt(stars);
+
         if (canChangeStatus) {
             if (status !== undefined) updateData.status = parseInt(status);
             if (score !== undefined) updateData.score = parseFloat(score);
-        }
-        else {
-            updateData.status = 0; // 非管理员不能修改状态，默认为 0（未启用）
+        } else if (!hotelId) {
+            updateData.status = 0; // 新增酒店时，非管理员默认为待审核
         }
 
-        // 如果没有 hotelId，说明是全新的酒店，直接 create
+        // --- 3. 处理标签逻辑 (核心修复点) ---
+        // 先定义哪些标签是选中的
+        const selectedTagNames = [];
+        if (hasBreakfast) selectedTagNames.push("含早餐");
+        if (hasParking) selectedTagNames.push("免费停车");
+
+        const connectOrCreate = selectedTagNames.map(name => ({
+            where: { name: name },
+            create: { name: name }
+        }));
+
+        // 如果没有 hotelId，执行 CREATE
         if (!hotelId) {
-            if (!hotelName || !hotelAddress) {
+            if (!hotelName || !address) {
                 return res.status(400).json({ code: 400, msg: "新增酒店时，酒店名称和地址不能为空" });
             }
+
             const newHotel = await prisma.hotel.create({
                 data: {
-                    hotelName: hotelName,
-                    hotelierName: hotelierName,
-                    hotelEmail: hotelEmail,
+                    ...updateData,
                     userId: parseInt(userId),
-                    address: hotelAddress,
-                    openingTime: new Date().toISOString(), // 默认开业时间为当前时间
-                    stars: 0,
-                    score: 0.0,
-                    status: canChangeStatus ? parseInt(status) : 0
+                    score: updateData.score || 0.0,
+                    // 【修复】新建时只传 connectOrCreate
+                    tags: {
+                        connectOrCreate: connectOrCreate
+                    }
                 }
             });
             return res.status(200).json({ code: 200, data: newHotel, msg: "新增成功" });
         }
-        const existingHotel = await prisma.hotel.findUnique({ where: { id: hotelId } });
 
+        // --- 4. 修改逻辑 (UPDATE) ---
+        const existingHotel = await prisma.hotel.findUnique({ where: { id: hotelId } });
         if (!existingHotel) {
             return res.status(404).json({ code: 404, msg: "找不到对应的酒店ID" });
         }
+
+        // 在更新时，我们需要处理标签的“勾选”与“取消勾选”
+        // 这里的技巧是：先 disconnect 所有可能被取消的标签
+        const allPossibleTags = ["含早餐", "免费停车"];
+        const disconnect = allPossibleTags
+            .filter(name => !selectedTagNames.includes(name))
+            .map(name => ({ name: name }));
+
         const updatedHotel = await prisma.hotel.update({
             where: { id: hotelId },
-            data: updateData
+            data: {
+                ...updateData,
+                tags: {
+                    connectOrCreate: connectOrCreate,
+                    disconnect: disconnect // 更新时可以使用 disconnect
+                }
+            }
         });
-        // // 如果有 hotelId，执行 upsert (有则写，无则增)
-        // const hotel = await prisma.hotel.upsert({
-        //     where: { id: hoteliId },
-        //     update: {
-        //         hotelName,
-        //         hotelierName: hotelierName,
-        //         hoteliEmail: hoteliEmail,
-        //         address: hoteliAddress
-        //     },
-        //     create: {
-        //         id: hoteliId, // 如果是自己指定ID
-        //         hotelName,
-        //         hotelierName: hotelierName,
-        //         hoteliEmail: hoteliEmail,
-        //         address: hoteliAddress,
-        //         userId: parseInt(userId),
-        //         openingTime: new Date().toISOString(), // 默认开业时间为当前时间
-        //         stars: 0,
-        //         score: 0.0,
-        //         status: canChangeStatus ? parseInt(status) : 0
-        //     }
-        // });
 
         res.status(200).json({ code: 200, data: updatedHotel, msg: "保存成功" });
+
     } catch (error) {
+        console.log("保存酒店基本信息失败:", error);
         res.status(500).json({ code: 500, msg: error.message });
     }
 };
 
+
 const saveHotelDetails = async (req, res) => {
+    console.log("saveHotelDetails body:", req.body);
+    if (!req.body) {
+        return res.status(400).json({ code: 400, msg: "请求体为空，请检查是否配置了 express.json()" });
+    }
     try {
-        const { hotelId, hasBreakfast, hasParking, location, nearby, openingTime, imageUrl, stars } = req.body;
+        const { hotelId, hasBreakfast, hasParking, address, nearby, openingTime, imageUrl, stars } = req.body;
         const tagsAction = {
             connectOrCreate: [],
             disconnect: []
@@ -311,11 +338,11 @@ const saveHotelDetails = async (req, res) => {
         const hotel = await prisma.hotel.update({
             where: { id: hotelId },
             data: {
-                address: location,
+                address: address,
                 nearby: nearby || null,
                 openingTime: openingTime,
                 imageUrl: imageUrl,
-                stars: stars,
+                stars: parseInt(stars),
                 tags: tagsAction
             },
             include: {
@@ -333,7 +360,7 @@ const saveRoom = async (req, res) => {
     try {
         const {
             id, // 注意：建议前端在修改时传这个房间的唯一ID
-            hotelID,
+            hotelId,
             roomName,
             roomPrice,
             capacity,

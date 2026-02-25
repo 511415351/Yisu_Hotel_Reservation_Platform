@@ -33,7 +33,7 @@ model Hotel {
   stars         Int         //星级
   score         Decimal     //评分
   openingTime   String      //开业时间
-  imageUrl      String?     //图片
+  imageUrl      String? @db.Text    //图片
   nearby        String?     //附近设施
   reason        String?     //不通过理由
   tags          HotelTag[] 
@@ -51,7 +51,7 @@ model RoomType {
    name        String   // 例如：豪华大床房
    price       Decimal  // 价格
    capacity    Int      // 入住人数
-   imageUrl    String?  //图片
+   imageUrl    String? @db.Text //图片
   
    // 床位信息
    bedType     String   // 例如：大床、双人床、单人床
