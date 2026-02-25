@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Taro, { useRouter } from '@tarojs/taro'
 import { View, Image, ScrollView, Text } from '@tarojs/components'
 import { Swiper, SwiperItem, Cell, Button, Divider, Rate, Tag, Empty } from '@nutui/nutui-react-taro'
 import './index.scss'
-
+import { HotelParams,RoomParams} from '../../types/api'
+import  api  from '../../api/index' 
 export default function Index() {
     const router = useRouter()
     const params = router.params || {}
@@ -12,97 +13,153 @@ export default function Index() {
 
 
     // 硬编码酒店数据
-    const hotelDetail = {
-        id: '1',
+    const [hotelDetail, setHotelDetail] = useState<HotelParams>({
+        hotelId: '1',
         hotelName: '希尔顿酒店',
-        address: '北京市朝阳区建国路100号',
+        openingTime: '2026-01-01',
+        hotelierEmail: '1234567890@qq.com',
+        hotelierName: '张三',
         hotelierPhone: '010-12345678',
+        address: '北京市朝阳区建国路100号',
         star: 5,
-        distance: 2.5,
-        features: ['免费停车', '健身房', '游泳池', '餐厅', '会议室', '接机服务'],
-        images: [
+        score: 4,
+        hasBreakfast: true,
+        hasParking: true,
+        hotelRooms: [
+            {
+                id: '1',
+                roomName: '大床房',
+                roomPrice: '600',
+                roomPicture: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500',
+                number: '2',
+                hasTV: true,
+                hasWifi: true,
+                hasWindow: true,
+                hasBathtub: true
+            }
+        ],
+        imageUrl: [
             'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500',
             'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500',
             'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=500',
             'https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=500'
         ]
      
-    }
-
-    // 硬编码房间数据
-    const [rooms, setRooms] = useState([
+    })
+    useEffect(() => {
+        fetchHotelDetail()
+    }, [hotelId])
+    
+    const [rooms, setRooms] = useState<RoomParams[]>([
         {
             id: '1',
-            roomName: '豪华大床房',
-            image: 'https://tse3.mm.bing.net/th/id/OIP.NwhnQmBYKY7x0pKq6TN69AHaFj?cb=defcache2&defcache=1&rs=1&pid=ImgDetMain&o=7&rm=3',
-            area: 45,
-            bedType: '大床 (1.8米)',
-            floor: '5-12层',
-            price: 888,
-            facilities: ['WiFi', '空调', '电视', '吹风机', '24小时热水', '洗漱用品'],
-            available: true
+                roomName: '大床房',
+                roomPrice: '600',
+                roomPicture: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500',
+                number: '2',
+                hasTV: true,
+                hasWifi: true,
+                hasWindow: true,
+                hasBathtub: true
         },
         {
             id: '2',
-            roomName: '商务双床房',
-            image: 'https://images.unsplash.com/photo-1566665797739-1674de7a421a?w=500',
-            area: 38,
-            bedType: '双床 (1.2米)',
-            floor: '8-15层',
-            price: 688,
-            facilities: ['WiFi', '空调', '电视', '吹风机', '办公桌'],
-            available: true
+                roomName: '大床房',
+                roomPrice: '600',
+                roomPicture: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500',
+                number: '2',
+                hasTV: true,
+                hasWifi: true,
+                hasWindow: true,
+                hasBathtub: true
         },
         {
             id: '3',
-            roomName: '行政套房',
-            image: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=500',
-            area: 80,
-            bedType: '特大床 (2米)',
-            floor: '20-25层',
-            price: 1888,
-            facilities: ['WiFi', '空调', '电视', '浴缸', '客厅', '迷你吧', '行政酒廊'],
-            available: true
+            roomName: '大床房',
+            roomPrice: '600',
+            roomPicture: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500',
+            number: '2',
+            hasTV: true,
+            hasWifi: true,
+            hasWindow: true,
+            hasBathtub: true
         },
         {
             id: '4',
-            roomName: '家庭套房',
-            image: 'https://images.unsplash.com/photo-1595576508898-0ad5c879a061?w=500',
-            area: 65,
-            bedType: '大床 + 单人床',
-            floor: '10-18层',
-            price: 1288,
-            facilities: ['WiFi', '空调', '电视', '儿童用品', '厨房'],
-            available: true
+                roomName: '大床房',
+                roomPrice: '600',
+                roomPicture: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500',
+                number: '2',
+                hasTV: true,
+                hasWifi: true,
+                hasWindow: true,
+                hasBathtub: true
         },
         {
             id: '5',
-            roomName: '标准大床房',
-            image: 'https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=500',
-            area: 30,
-            bedType: '大床 (1.5米)',
-            floor: '3-8层',
-            price: 488,
-            facilities: ['WiFi', '空调', '电视', '吹风机'],
-            available: true
+                roomName: '大床房',
+                roomPrice: '600',
+                roomPicture: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500',
+                number: '2',
+                hasTV: true,
+                hasWifi: true,
+                hasWindow: true,
+                hasBathtub: true
         },
         {
             id: '6',
-            roomName: '豪华套房',
-            image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=500',
-            area: 95,
-            bedType: '特大床 (2米)',
-            floor: '26-30层',
-            price: 2288,
-            facilities: ['WiFi', '空调', '电视', '浴缸', '客厅', '迷你吧', '景观阳台'],
-            available: true
+            roomName: '大床房',
+            roomPrice: '600',
+            roomPicture: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500',
+            number: '2',
+            hasTV: true,
+            hasWifi: true,
+            hasWindow: true,
+            hasBathtub: true
         }
     ])
 
     const [hasMore, setHasMore] = useState(true)
     const [loading, setLoading] = useState(false)
+    const [currentPage, setCurrentPage] = useState(1)
+    const [pageSize, setPageSize] = useState(2)
+    const [refreshing, setRefreshing] = useState(false)
+ // 获取酒店详情
+    const fetchHotelDetail = async () => {
+        if (!hotelId) return
+        
+        // 重置分页状态
+        setCurrentPage(1)
+        setHasMore(true)
+        setLoading(true)
+        
+        try {
+            // 调用接口获取酒店详情
+            const res = await api.getHotelDetail(hotelId)
+            
+            if (res) {
+                setHotelDetail(res)
+                setRooms(res.hotelRooms || [])
+            }
+        } catch (error) {
+            console.error('获取酒店详情失败', error)
+            Taro.showToast({
+                title: '加载酒店信息失败',
+                icon: 'none'
+            })
+        } finally {
+            setLoading(false)
+            setRefreshing(false)
+        }
+    }
 
-    // 模拟加载更多数据
+    // 处理下拉刷新
+    const handleRefresh = () => {
+        setRefreshing(true)
+        fetchHotelDetail()
+    }
+
+    // 加载更多房间数据
     const loadMoreRooms = () => {
         if (loading || !hasMore) return
         
@@ -110,33 +167,16 @@ export default function Index() {
         
         // 模拟异步加载
         setTimeout(() => {
-            const moreRooms = [
-                {
-                    id: '7',
-                    roomName: '总统套房',
-                    image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=500',
-                    area: 200,
-                    bedType: '特大床 (2.2米)',
-                    floor: '30层',
-                    price: 8888,
-                    facilities: ['WiFi', '空调', '电视', '浴缸', '客厅', '餐厅', '书房', '健身房', '桑拿'],
-                    available: true
-                },
-                {
-                    id: '8',
-                    roomName: '无障碍房',
-                    image: 'https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?w=500',
-                    area: 42,
-                    bedType: '大床 (1.8米)',
-                    floor: '2层',
-                    price: 588,
-                    facilities: ['WiFi', '空调', '电视', '无障碍设施', '紧急呼叫'],
-                    available: true
-                }
-            ]
+            const nextPage = currentPage + 1
+            const totalRooms = rooms.length
+            const maxPage = Math.ceil(totalRooms / pageSize)
             
-            setRooms(prevRooms => [...prevRooms, ...moreRooms])
-            setHasMore(false) // 加载完后没有更多数据
+            if (nextPage > maxPage) {
+                setHasMore(false) // 没有更多数据
+            } else {
+                setCurrentPage(nextPage) // 增加页码
+            }
+            
             setLoading(false)
         }, 1000)
     }
@@ -146,13 +186,7 @@ export default function Index() {
         Taro.showToast({
             title: `预订${room.roomName}`,
             icon: 'none'
-        })
-        // 实际开发中可以跳转到预订页面
-        // Taro.navigateTo({
-        //     url: `/pages/booking/index?roomId=${room.id}`
-        // })
-    }
-
+        })}
     // 拨打酒店电话
     const handleCall = () => {
         Taro.makePhoneCall({
@@ -178,6 +212,9 @@ export default function Index() {
             showScrollbar={false}
             lowerThreshold={50}
             onScrollToLower={loadMoreRooms}
+            refresherEnabled={true}
+            refresherTriggered={refreshing}
+            onRefresherRefresh={handleRefresh}
         >
             {/* 顶部轮播图 */}
             <Swiper
@@ -186,7 +223,7 @@ export default function Index() {
                 autoPlay
                 loop
             >
-                {hotelDetail.images.map((img, index) => (
+                {hotelDetail.imageUrl.map((img, index) => (
                     <SwiperItem key={index}>
                         <Image
                             className='swiper-image'
@@ -203,13 +240,8 @@ export default function Index() {
                 <View className='hotel-header'>
                     <View className='hotel-title'>
                         <Text className='name'>{hotelDetail.hotelName}</Text>
-                        <Rate value={hotelDetail.star} readOnly />
+                        <Rate  allowHalf value={hotelDetail.star} readOnly />
                     </View>
-                    {hotelDetail.distance && (
-                        <Tag type='danger' round>
-                            {hotelDetail.distance}km
-                        </Tag>
-                    )}
                 </View>
 
                 <View className='hotel-address'>
@@ -225,11 +257,16 @@ export default function Index() {
                 </View>
 
                 <View className='hotel-tags'>
-                    {hotelDetail.features.map((tag, index) => (
-                        <Tag key={index} type='info' round>
-                            {tag}
-                        </Tag>
-                    ))}
+                   {hotelDetail.hasBreakfast && (
+                    <Tag type='info' round>
+                        含早餐
+                    </Tag>
+                   )}
+                   {hotelDetail.hasParking && (
+                    <Tag type='info' round>
+                        含停车
+                    </Tag>
+                   )}
                 </View>
 
                 <Divider />
@@ -253,44 +290,26 @@ export default function Index() {
 
             {/* 房间列表 */}
             <View className='room-list'>
-                {rooms.map((room) => (
+                {rooms.slice(0, currentPage * pageSize).map((room) => (
                     <View key={room.id} className='room-item'>
                         <Image
                             className='room-image'
-                            src={room.image}
+                                src={room.roomPicture || ''}
                             mode='aspectFill'
                             lazyLoad
                         />
                         <View className='room-info'>
                             <View className='room-name'>
                                 <Text className='name'>{room.roomName}</Text>
-                                <Tag type='success' round>
-                                    {room.area}㎡
-                                </Tag>
                             </View>
                             
                             <View className='room-desc'>
-                                <Text>🛏️ {room.bedType}</Text>
-                                <Text>📌 {room.floor}</Text>
+                                <Text>剩🛏️ {room.number}间</Text>
                             </View>
-                            
-                            <View className='room-facilities'>
-                                {room.facilities.slice(0, 4).map((facility, index) => (
-                                    <Tag key={index} type='default' round>
-                                        {facility}
-                                    </Tag>
-                                ))}
-                                {room.facilities.length > 4 && (
-                                    <Tag type='default' round>
-                                        +{room.facilities.length - 4}
-                                    </Tag>
-                                )}
-                            </View>
-                            
                             <View className='room-footer'>
                                 <View className='price'>
                                     <Text className='currency'>¥</Text>
-                                    <Text className='value'>{room.price}</Text>
+                                    <Text className='value'>{room.roomPrice}</Text>
                                     <Text className='unit'>/晚</Text>
                                 </View>
                                 <Button

@@ -43,7 +43,7 @@ const AdBanner = () => {
     <Swiper
       className='ad-banner-swiper'
       defaultValue={0}
-      autoPlay
+      autoPlay={false}
       indicator
       onChange={onChange}
     >

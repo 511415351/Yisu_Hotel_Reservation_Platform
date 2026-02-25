@@ -1,7 +1,7 @@
 import {  useEffect, useRef,useState } from 'react'
 import Taro from '@tarojs/taro';
 import { View, Text ,ScrollView} from '@tarojs/components'
-import { Card,VirtualList} from '@nutui/nutui-react-taro'
+import { Card,VirtualList,Button,Tag} from '@nutui/nutui-react-taro'
 import  api  from '../../api/index' 
 import { HotelListParams } from '../../types/api' 
 import './index.scss'
@@ -9,32 +9,68 @@ import {useRouter} from '@tarojs/taro'
 
 export default function HotelList() {
     const router = useRouter()
-    const params = router.params || {}
-    
-    // 从路由参数中解析筛选条件
-    const searchParams = {
-        city: params.city ? decodeURIComponent(params.city) : '',
-        hotelName: params.hotelName ? decodeURIComponent(params.hotelName) : '',
-        checkInDate: params.checkInDate || '',
-        checkInTime: params.checkInTime || '',
-        checkOutDate: params.checkOutDate || '',
-        checkOutTime: params.checkOutTime || '',
-        roomNum: params.roomNum ? parseInt(params.roomNum) : 1,
-        adultNum: params.adultNum ? parseInt(params.adultNum) : 1,
-        childNum: params.childNum ? parseInt(params.childNum) : 0,
-    }
-    
+    const [searchParams, setSearchParams] = useState<any>({
+        city:'',
+        hotelName: '',
+        checkInDate:  '',
+        checkInTime:  '',
+        checkOutDate:  '',
+        checkOutTime:   '',
+        roomNum:  1,
+        adultNum:   1,
+        childNum:  0,
+        star:  0,
+        priceRange: '',
+        nearby:  '',
+        hasBreakfast: false,
+        hasParking: false,
+    })
+    useEffect(() => {
+        if (router.params) {
+            const params = { ...searchParams }
+            Object.keys(router.params).forEach(key => {
+                try {
+                    params[key] = decodeURIComponent(router.params[key] || '')
+                } catch (e) {
+                    params[key] = router.params[key] || ''
+                }
+            })
+            setSearchParams(params)
+        }
+    }, [router.params])
+    // // 从路由参数中解析筛选条件
+    // const setSearchParams = {
+    //     city: params.city ? decodeURIComponent(params.city) : '',
+    //     hotelName: params.hotelName ? decodeURIComponent(params.hotelName) : '',
+    //     checkInDate: params.checkInDate || '',
+    //     checkInTime: params.checkInTime || '',
+    //     checkOutDate: params.checkOutDate || '',
+    //     checkOutTime: params.checkOutTime || '',
+    //     roomNum: params.roomNum ? parseInt(params.roomNum) : 1,
+    //     adultNum: params.adultNum ? parseInt(params.adultNum) : 1,
+    //     childNum: params.childNum ? parseInt(params.childNum) : 0,
+    //     star: params.star ? parseInt(params.star) : 0,
+    //     priceRange: params.priceRange ? decodeURIComponent(params.priceRange) : '',
+    //     nearby: params.nearby? decodeURIComponent(params.nearby) : '',
+    //     hasBreakfast: params.hasBreakfast ? parseBoolean(params.hasBreakfast) : false,
+    //     hasParking: params.hasParking ? parseBoolean(params.hasParking) : false,
+    // }
+   
     console.log('从首页传递的筛选条件:', searchParams)
-    
-    const state = {
-        src: 'https://tse3.mm.bing.net/th/id/OIP.NwhnQmBYKY7x0pKq6TN69AHaFj?cb=defcache2&defcache=1&rs=1&pid=ImgDetMain&o=7&rm=3',
-        title:
-        '666酒店',
-        price: '388',
-        vipPrice: '378',
-        shopDescription: '4.9分  |  1000+人评价  |  免费取消',
-        delivery: '五星级酒店',
-        shopName: '上海店>',
+    // 当筛选参数变化时重新请求
+        useEffect(() => {
+            fetchList()
+        }, [searchParams])
+
+    const wordStyles = {
+        padding: '0 5px',
+        borderRadius: '1px',
+        fontSize: '10px',
+        height: '15px',
+        lineHeight: '15px',
+        color: '#999',
+        backgroundColor: '#f2f2f7',
+        marginRight: '5px',
     }
     const [loading, setLoading] = useState<boolean>(false)
     const [hotelList, setHotelList] = useState<HotelListParams[]>([])
@@ -71,7 +107,21 @@ export default function HotelList() {
             if (searchParams.childNum !== undefined) {
                 apiParams.childNum = searchParams.childNum
             }
-            
+            if(searchParams.star) {
+                apiParams.star = searchParams.star
+            }
+            if(searchParams.priceRange) {
+                apiParams.priceRange = searchParams.priceRange
+            }
+            if(searchParams.nearby) {
+                apiParams.nearby = searchParams.nearby
+            }
+            if(searchParams.hasBreakfast) {
+                apiParams.hasBreakfast = searchParams.hasBreakfast
+            }
+            if(searchParams.hasParking) {
+                apiParams.hasParking = searchParams.hasParking
+            }
             console.log('API 请求参数:', apiParams)
             let data = await api.getHotelList(apiParams);
             console.log('酒店列表数据:', data);
@@ -84,9 +134,7 @@ export default function HotelList() {
         }
         
     }
-    useEffect(() => {
-        fetchList()
-    }, [])
+
     const [list, setList] = useState<string[]>([])
     const [pageNo, setPageNo] = useState(1)
     const isLoading = useRef(false)
@@ -115,25 +163,115 @@ export default function HotelList() {
     useEffect(() => {
         getData()
     }, [pageNo])
+    // 酒店每一个列表项中的信息维度(酒店名/评分/地址/价格等)如有更好的用户体验可以自行定义
+     // 跳转到搜索页修改条件
+  const goToSearch = () => {
+    // 把当前参数传回首页，让首页回填
+    const params = { ...searchParams }
+    const queryString = Object.keys(params)
+      .map(key => `${key}=${encodeURIComponent(params[key])}`)
+      .join('&')
+    
+    Taro.navigateTo({
+      url: `/pages/index/index?${queryString}`
+    })
+  }
+
+//   // 跳转到详情页
+//   const goToDetail = (hotelId) => {
+//     Taro.navigateTo({
+//       url: `/pages/detail/index?hotelId=${hotelId}`
+//     })
+//   }
+
+  // 格式化显示筛选条件
+  const formatParams = () => {
+    const { city, checkInDate, checkOutDate, roomNum, adultNum, childNum, star, priceRange } = searchParams
+    const parts: string[] = []
+    
+    if (city) parts.push(city)
+    if (checkInDate) parts.push(`${checkInDate}入住`)
+    if (checkOutDate) parts.push(`${checkOutDate}离店`)
+    if (roomNum) parts.push(`${roomNum}间`)
+    if (adultNum) parts.push(`${adultNum}成人`)
+    if (childNum && childNum !== '0') parts.push(`${childNum}儿童`)
+    if (star) parts.push(`${star}星`)
+    if (priceRange) {
+      const priceMap = {
+        '0-200': '¥200以下',
+        '201-500': '¥201-500',
+        '501-800': '¥501-800',
+        '801+': '¥800以上'
+      }
+      parts.push(priceMap[priceRange] || priceRange)
+    }
+    
+    return parts.join(' · ') || '请选择筛选条件'
+  }
     return (
-        <View>
-            <Text>这是酒店列表页面</Text>
+        <View className='hotel-list-page'>
+        {/* 顶部筛选条件条 */}
+        <View className='filter-bar' onClick={goToSearch}>
+          <View className='filter-content'>
+            <Text className='filter-icon'>🔍</Text>
+            <Text className='filter-text'>{formatParams()}</Text>
+          </View>
+          <Button size='small' type='primary' className='filter-btn'>修改</Button>
+        </View>
+  
+        {/* 快捷筛选标签 */}
+        <View className='quick-filters'>
+          <Tag 
+            type={searchParams.priceRange === '0-200' ? 'primary' : 'default'}
+            onClick={() => {/* 快速筛选逻辑 */}}
+          >¥200以下</Tag>
+          <Tag 
+            type={searchParams.hasBreakfast === '1' ? 'primary' : 'default'}
+            onClick={() => {/* 快速筛选逻辑 */}}
+          >含早餐</Tag>
+          <Tag 
+            type={searchParams.hasParking === '1' ? 'primary' : 'default'}
+            onClick={() => {/* 快速筛选逻辑 */}}
+          >免费停车</Tag>
+          <Tag 
+            type={searchParams.nearby === 'subway' ? 'primary' : 'default'}
+            onClick={() => {/* 快速筛选逻辑 */}}
+          >近地铁</Tag>
+        </View>
+            {/* 列表标题/统计 */}
+        <View className='list-header'>
+            <Text className='count'>共 {hotelList.length} 家酒店</Text>
+            <Text className='sort'>默认排序 ▼</Text>
+        </View>
+        <span></span>
             <ScrollView scrollY className='list-wrapper' style={{ height: '100vh' }}>
                 {hotelList.length > 0 ? (
                     hotelList.map((item) => (
                         <Card
                             key={item._id}
                             // 1. 映射图片：如果有真实字段用 item.pic，没有就用你定义的 state.src 占位
-                            src={state.src} 
+                            src={item.imageUrl} 
                             // 2. 映射标题
                             title={item.hotelName}
                             // 3. 映射价格：假设后端还没给价格，先写死或根据状态判断
-                            price={item.status === 1 ? "388" : "暂无报价"}
-                            vipPrice={item.status === 1 ? "350" : ""}
+                            price={item.lowestPrice ? item.lowestPrice : "暂无报价"}
                             // 4. 映射描述（地址）
                             shopDescription={item.address}
                             // 5. 映射标签（星级）
-                            delivery={item.status === 1 ? "已开业" : "筹备中"}
+                            description={
+                                <div
+                                  className="search_prolist_attr"
+                                  style={{
+                                    display: 'inline-flex',
+                                    margin: '3px 0 1px',
+                                    height: '15px',
+                                  }}
+                                >
+                                <span style={wordStyles} className="word" >
+                                {item.score}
+                                </span>
+                                </div>
+                              }
                             shopName="查看详情 >"
                             // 6. 【关键】点击事件，通过箭头函数传递当前酒店 ID
                             onClick={() => {

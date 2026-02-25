@@ -1,7 +1,7 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useMemo, useCallback, memo } from 'react'
 import Taro from '@tarojs/taro';
-import { View, Text, Button as NativeButton } from '@tarojs/components'
-import { Button as NutButton, Form, Input, Cascader, Cell } from '@nutui/nutui-react-taro'
+import { View, Text} from '@tarojs/components'
+import { Button as NutButton, Input, Cascader, Cell } from '@nutui/nutui-react-taro'
 import CalenderCon from './Calendar'
 import RoomNumber from './RoomNumber'
 import './index.scss'
@@ -10,8 +10,54 @@ import AdBanner from './AdBanner';
 import promoImage from '../../assets/images/ad/1.png';
 import { Picker } from '@nutui/nutui-react-taro'
 
+interface FilterButtonsProps {
+    nearby: string | null;
+    hasBreakfast: boolean;
+    hasParking: boolean;
+    setNearby: (value: string | null) => void;
+    setHasBreakfast: (value: boolean) => void;
+    setHasParking: (value: boolean) => void;
+}
+// 提取子组件 - FilterButtons
+const FilterButtons = memo(({ 
+  nearby, 
+  hasBreakfast, 
+  hasParking, 
+  setNearby, 
+  setHasBreakfast, 
+  setHasParking 
+}:FilterButtonsProps) => (
+  <View className="keyword-options">
+    <NutButton
+      type={nearby === 'subway' ? 'primary' : 'default'}
+      size="small"
+      onClick={() => setNearby(nearby === 'subway' ? null : 'subway')}
+    >🚇 近地铁</NutButton>
+    
+    <NutButton
+      type={hasBreakfast ? 'primary' : 'default'}
+      size="small"
+      onClick={() => setHasBreakfast(!hasBreakfast)}
+    >🍳 免费早餐</NutButton>
+    
+    <NutButton
+      type={hasParking ? 'primary' : 'default'}
+      size="small"
+      onClick={() => setHasParking(!hasParking)}
+    >🅿️ 含停车</NutButton>
+  </View>
+))
 
-export default function Index() {
+// 提取城市选择器组件
+const CitySelector = memo(({ value5, setIsVisibleDemo5 }: { value5: string[]; setIsVisibleDemo5: (value: boolean) => void }) => (
+  <Cell
+    title="选择城市"
+    description={value5.length ? value5.join(' - ') : '请选择城市'}
+    onClick={() => setIsVisibleDemo5(true)}
+  />
+))
+
+const Index = () => {
     const [isVisibleDemo5, setIsVisibleDemo5] = useState(false)
     const [value5, setValue5] = useState<string[]>([])
     const [dateTimeData, setDateTimeData] = useState<{
@@ -23,16 +69,38 @@ export default function Index() {
     const [roomData, setRoomData] = useState<{ roomNum: number; adultNum: number; childNum: number }>({ roomNum: 1, adultNum: 1, childNum: 0 })
     const hotelNameRef = useRef<string>('')
     
-    // 新增状态：星级、价格、关键词
-    const [star, setStar] = useState<number | null>(null)
-    const [priceRange, setPriceRange] = useState<string | null>(null)
-    const [keywords, setKeywords] = useState<string[]>([])
+    // 合并相关状态
+    const [filters, setFilters] = useState({
+        star: null as number | null,
+        priceRange: null as string | null,
+        nearby: null as string | null,
+        hasBreakfast: false,
+        hasParking: false,
+        starText: '不限'
+    })
 
     const [showStarPicker, setShowStarPicker] = useState(false)
     const [showPricePicker, setShowPricePicker] = useState(false)
-    const [starText, setStarText] = useState('不限')
-    // 修复级联选择器数据格式
-    const [optionsDemo5] = useState([
+
+    // 使用 useMemo 缓存静态数据
+    const starOptions = useMemo(() => [
+        { value: 0, text: '不限' },
+        { value: 1, text: '1星' },
+        { value: 2, text: '2星' },
+        { value: 3, text: '3星' },
+        { value: 4, text: '4星' },
+        { value: 5, text: '5星' }
+    ], [])
+
+    const priceOptions = useMemo(() => [
+        { value: '', text: '不限' },
+        { value: '0-200', text: '200元以下' },
+        { value: '201-500', text: '201-500元' },
+        { value: '501-800', text: '501-800元' },
+        { value: '801+', text: '800元以上' }
+    ], [])
+
+    const optionsDemo5 = useMemo(() => [
         { value: '北京', text: '北京', children: [
             { value: '朝阳区', text: '朝阳区', children: [
                 { value: 'CBD', text: 'CBD' }
@@ -48,48 +116,35 @@ export default function Index() {
                 { value: '珠江新城', text: '珠江新城' }
             ]}
         ]}
-    ])
-        // 星级选项
-    const starOptions = [
-        { value: 0, text: '不限' },
-        { value: 1, text: '1星' },
-        { value: 2, text: '2星' },
-        { value: 3, text: '3星' },
-        { value: 4, text: '4星' },
-        { value: 5, text: '5星' }
-    ]
-    
-    // 价格选项
-    const priceOptions = [
-        { value: '', text: '不限' },
-        { value: '0-200', text: '200元以下' },
-        { value: '201-500', text: '201-500元' },
-        { value: '501-800', text: '501-800元' },
-        { value: '801+', text: '800元以上' }
-    ]
-    
-    // 处理星级选择
-    const handleStarConfirm = (options: any) => {
-        const selected = options[0]
-        setStar(selected.value === 0 ? null : selected.value)
-        setStarText(selected.text)
-        setShowStarPicker(false)
-    }
-    
-    // 处理价格选择
-    const handlePriceConfirm = (options: any) => {
-        const selected = options[0]
-        setPriceRange(selected.value)
-        setShowPricePicker(false)
-    }
+    ], [])
 
-    const change5 = (value: any, path: any) => {
+    // 使用 useCallback 缓存函数
+    const handleStarConfirm = useCallback((options: any) => {
+        const selected = options[0]
+        setFilters(prev => ({
+            ...prev,
+            star: selected.value === 0 ? null : selected.value,
+            starText: selected.text
+        }))
+        setShowStarPicker(false)
+    }, [])
+
+    const handlePriceConfirm = useCallback((options: any) => {
+        const selected = options[0]
+        setFilters(prev => ({
+            ...prev,
+            priceRange: selected.value
+        }))
+        setShowPricePicker(false)
+    }, [])
+
+    const change5 = useCallback((value: any, path: any) => {
         console.log('onChange', value, path)
         setValue5(value)
-        setIsVisibleDemo5(false) // 选择后自动关闭
-    }
+        setIsVisibleDemo5(false)
+    }, [])
 
-    const handleSearch = () => {
+    const handleSearch = useCallback(() => {
         const city = value5[0] || '上海';
         const hotelName = hotelNameRef.current || '';
 
@@ -108,10 +163,11 @@ export default function Index() {
             params.checkOutTime = dateTimeData.checkOutTime;
         }
 
-        // 新增参数
-        if (star) params.star = star.toString();
-        if (priceRange) params.priceRange = priceRange;
-        if (keywords.length) params.keywords = keywords.map(k => encodeURIComponent(k)).join(',');
+        if (filters.star) params.star = filters.star.toString();
+        if (filters.priceRange) params.priceRange = filters.priceRange;
+        if (filters.nearby) params.nearby = filters.nearby;
+        if (filters.hasBreakfast) params.hasBreakfast = filters.hasBreakfast.toString();
+        if (filters.hasParking) params.hasParking = filters.hasParking.toString();
 
         const queryString = Object.keys(params)
             .map(key => `${key}=${params[key]}`)
@@ -121,23 +177,12 @@ export default function Index() {
         Taro.navigateTo({
             url: `/pages/list/index?${queryString}`
         });
-    }
+    }, [value5, roomData, dateTimeData, filters])
 
-    const toggleKeyword = (keyword: string) => {
-        setKeywords(prev => 
-            prev.includes(keyword) ? prev.filter(k => k !== keyword) : [...prev, keyword]
-        )
-    }
-
-    // 处理星级选择
-    const handleStarSelect = (s: number) => {
-        setStar(star === s ? null : s)
-    }
-
-    // 处理价格选择
-    const handlePriceSelect = (p: string) => {
-        setPriceRange(priceRange === p ? null : p)
-    }
+    // 更新单个 filter 的辅助函数
+    const updateFilter = useCallback((key: string, value: any) => {
+        setFilters(prev => ({ ...prev, [key]: value }))
+    }, [])
 
     return (
         <View className="index">
@@ -146,11 +191,10 @@ export default function Index() {
             </View>
 
             <View className="section">
-                {/* 地址选择 */}
-                <Cell
-                    title="选择城市"
-                    description={value5.length ? value5.join(' - ') : '请选择城市'}
-                    onClick={() => setIsVisibleDemo5(true)}
+                {/* 地址选择 - 使用提取的组件 */}
+                <CitySelector 
+                    value5={value5} 
+                    setIsVisibleDemo5={setIsVisibleDemo5} 
                 />
                 
                 {/* 级联选择器 */}
@@ -173,58 +217,60 @@ export default function Index() {
                 <RoomNumber onChange={(data) => setRoomData(data)} />
 
                 <View className="filter-row">
-                {/* 星级选择 - 下拉 */}
-                <View className="filter-item">
-                    <Text className="filter-label">星级</Text>
-                    <View 
-                    className="filter-select"
-                    onClick={() => setShowStarPicker(true)}
-                    >
-                    <Text>{starText}</Text>
-                    <Text className="arrow">▼</Text>
+                    {/* 星级选择 - 下拉 */}
+                    <View className="filter-item">
+                        <Text className="filter-label">星级</Text>
+                        <View 
+                            className="filter-select"
+                            onClick={() => setShowStarPicker(true)}
+                        >
+                            <Text>{filters.starText}</Text>
+                            <Text className="arrow">▼</Text>
+                        </View>
+                        <Picker
+                            visible={showStarPicker}
+                            title="选择酒店星级"
+                            options={[starOptions]}
+                            onConfirm={handleStarConfirm}
+                            onClose={() => setShowStarPicker(false)}
+                        />
                     </View>
-                    <Picker
-                    visible={showStarPicker}
-                    title="选择酒店星级"
-                    options={[starOptions]}
-                    onConfirm={handleStarConfirm}
-                    onClose={() => setShowStarPicker(false)}
-                    />
+
+                    {/* 价格选择 - 下拉 */}
+                    <View className="filter-item">
+                        <Text className="filter-label">价格</Text>
+                        <View 
+                            className="filter-select"
+                            onClick={() => setShowPricePicker(true)}
+                        >
+                            <Text>
+                                {filters.priceRange 
+                                    ? priceOptions.find(p => p.value === filters.priceRange)?.text || '不限' 
+                                    : '不限'}
+                            </Text>
+                            <Text className="arrow">▼</Text>
+                        </View>
+                        <Picker
+                            visible={showPricePicker}
+                            title="选择价格区间"
+                            options={[priceOptions]}
+                            onConfirm={handlePriceConfirm}
+                            onClose={() => setShowPricePicker(false)}
+                        />
+                    </View>
                 </View>
 
-                {/* 价格选择 - 下拉 */}
-                <View className="filter-item">
-                    <Text className="filter-label">价格</Text>
-                    <View 
-                    className="filter-select"
-                    onClick={() => setShowPricePicker(true)}
-                    >
-                    <Text>{priceRange ? priceOptions.find(p => p.value === priceRange)?.text || '不限' : '不限'}</Text>
-                    <Text className="arrow">▼</Text>
-                    </View>
-                    <Picker
-                    visible={showPricePicker}
-                    title="选择价格区间"
-                    options={[priceOptions]}
-                    onConfirm={handlePriceConfirm}
-                    onClose={() => setShowPricePicker(false)}
-                    />
-                </View>
-                </View>
-
-                {/* 关键词选择 */}
+                {/* 关键词选择 - 使用提取的 FilterButtons 组件 */}
                 <View className="filter-section">
-                    <Text className="filter-label">关键词:</Text>
-                    <View className="keyword-options">
-                        {['免费早餐','含停车','近地铁'].map(k => (
-                            <NutButton
-                                key={k}
-                                type={keywords.includes(k) ? 'primary' : 'default'}
-                                size="small"
-                                onClick={() => toggleKeyword(k)}
-                            >{k}</NutButton>
-                        ))}
-                    </View>
+                    <Text className="filter-label">筛选条件:</Text>
+                    <FilterButtons
+                        nearby={filters.nearby}
+                        hasBreakfast={filters.hasBreakfast}
+                        hasParking={filters.hasParking}
+                        setNearby={(value) => updateFilter('nearby', value)}
+                        setHasBreakfast={(value) => updateFilter('hasBreakfast', value)}
+                        setHasParking={(value) => updateFilter('hasParking', value)}
+                    />
                 </View>
 
                 {/* 酒店名称输入 */}
@@ -258,3 +304,6 @@ export default function Index() {
         </View>
     )
 }
+
+// 使用 memo 包装整个组件
+export default memo(Index)

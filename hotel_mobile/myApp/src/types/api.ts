@@ -3,22 +3,36 @@ export interface HotelListParams {
     _id: string;
     hotelName: string;
     status: number;
+    score: number;
+    lowestPrice: string;
     address: string;
+    imageUrl: string;
 }
 
 export interface HotelParams {
     hotelId: string;
     hotelName: string;
-    status: number;
-    address: string;
+    openingTime: string;
+    hotelierEmail: string;
     hotelierName: string;
     hotelierPhone: string;
-    hotelImage: string;
+    imageUrl: string[];
+    hotelRooms: RoomParams[];
+    address: string;
+    star: number;
+    score: number;
+    hasBreakfast: boolean;
+    hasParking: boolean;
+
 }
 export interface RoomParams {
     id: string
     roomName: string
     roomPicture?: string
-    price: number
-    number:number
+    roomPrice: string
+    number:string
+    hasTV: boolean,
+    hasWifi: boolean,
+    hasWindow: boolean,
+    hasBathtub: boolean
   }
