@@ -40,7 +40,7 @@ export default function HotelList() {
                             break
                         case 'hasBreakfast':
                         case 'hasParking':
-                            params[key] = decodedValue === 'true' || decodedValue === true
+                            params[key] = decodedValue === 'true' 
                             break
                         case 'roomNum':
                         case 'adultNum':
@@ -62,7 +62,7 @@ export default function HotelList() {
                             break
                         case 'hasBreakfast':
                         case 'hasParking':
-                            params[key] = value === 'true' || value === true
+                            params[key] = value === 'true' 
                             break
                         default:
                             params[key] = value

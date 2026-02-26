@@ -19,7 +19,23 @@ interface CalendarConProps {
 }
 
 const CalendarCon: React.FC<CalendarConProps> = ({ onChange }) => {
-  const [date, setDate] = useState<string[]>([])
+   // 获取当前日期和明天的日期
+  const getDefaultDates = () => {
+    const today = new Date()
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    
+    const formatDate = (date: Date) => {
+      const year = date.getFullYear()
+      const month = padZero(date.getMonth() + 1)
+      const day = padZero(date.getDate())
+      return `${year}-${month}-${day}`
+    }
+    
+    return [formatDate(today), formatDate(tomorrow)]
+  }
+
+  const [date, setDate] = useState<string[]>(getDefaultDates())
   const [isVisible, setIsVisible] = useState(false)
 
   const disableDate = (date: CalendarDay) => {
@@ -27,11 +43,30 @@ const CalendarCon: React.FC<CalendarConProps> = ({ onChange }) => {
   }
 
   const [show, setShow] = useState(false)
-  const [dpAbled, setDatePickerAbled] = useState([false, false])
+  const [dpAbled, setDatePickerAbled] = useState([true, true])
   const [desc1, setDesc1] = useState('10:00:00')
   const [desc2, setDesc2] = useState('20:00:00')
   const desc = useRef(0)
+// 计算日历的开始和结束日期
+  const getCalendarRange = () => {
+    const today = new Date()
+    const startDate = new Date(today)
+    startDate.setFullYear(startDate.getFullYear() - 1) // 可以选择一年前的日期
+    
+    const endDate = new Date(today)
+    endDate.setFullYear(endDate.getFullYear() + 1) // 可以选择一年后的日期
+    
+    const formatDate = (date: Date) => {
+      const year = date.getFullYear()
+      const month = padZero(date.getMonth() + 1)
+      const day = padZero(date.getDate())
+      return `${year}-${month}-${day}`
+    }
+    
+    return { startDate: formatDate(startDate), endDate: formatDate(endDate) }
+  }
 
+  const calendarRange = getCalendarRange()
   const setChooseValue = (chooseData: any) => {
     console.log(
       'setChooseValue',
@@ -41,7 +76,6 @@ const CalendarCon: React.FC<CalendarConProps> = ({ onChange }) => {
     const dateArr = [...[chooseData[0][3], chooseData[1][3]]]
     setDate([...dateArr])
   }
-
   // 当日期或时间变化时，通知父组件
   useEffect(() => {
     if (date && date.length === 2 && onChange) {
@@ -101,8 +135,8 @@ const CalendarCon: React.FC<CalendarConProps> = ({ onChange }) => {
         visible={isVisible}
         defaultValue={date}
         type="range"
-        startDate="2024-01-01"
-        endDate="2025-09-10"
+       startDate={calendarRange.startDate}
+        endDate={calendarRange.endDate}
         disableDate={disableDate}
         firstDayOfWeek={1}
         onDayClick={(date) => {

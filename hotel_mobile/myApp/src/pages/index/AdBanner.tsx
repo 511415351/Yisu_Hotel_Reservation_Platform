@@ -1,25 +1,25 @@
 import Taro from '@tarojs/taro'
 import { View, ScrollView, Image, Text } from '@tarojs/components'
-import { HotelParams } from 'src/types/api'
+import { HotelListParams, HotelParams } from 'src/types/api'
 
-const defaultHotelImages: HotelParams[] = [
+const defaultHotelImages: HotelListParams[] = [
   {
-    hotelId: '1',
+    _id: '1',
     hotelName: '度假酒店',
     status: 4.5,
     address: '',
-    hotelierName: '',
-    hotelierPhone: '123',
-    hotelImage: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500',
+    score:4.5,
+    lowestPrice:'100',
+    imageUrl: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500',
   },
   {
-    hotelId: '2',
+     _id: '1',
     hotelName: '度假酒店',
     status: 4.5,
     address: '',
-    hotelierName: '',
-    hotelierPhone: '123',
-    hotelImage: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500',
+    score:4.5,
+    lowestPrice:'100',
+    imageUrl: 'https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=500',
   },
 ]
 
@@ -30,10 +30,10 @@ import {
 } from '@tarojs/components'
 
 const AdBanner = () => {
-    const handleHotelClick = (hotel: HotelParams) => {
-            console.log(`${hotel.hotelId}`)
+    const handleHotelClick = (hotel: HotelListParams) => {
+            console.log(`${hotel._id}`)
             Taro.navigateTo({
-              url: `/pages/detail/index?hotelId=${hotel.hotelId}`,
+              url: `/pages/detail/index?hotelId=${hotel._id}`,      
             })
           }
     const onChange: CommonEventFunction<TaroSwiperProps.onChangeEventDetail> = (e) => {
@@ -47,13 +47,13 @@ const AdBanner = () => {
       indicator
       onChange={onChange}
     >
-      {defaultHotelImages.map((hotel: HotelParams, index) => (
-        <Swiper.Item key={hotel.hotelId}>
+      {defaultHotelImages.map((hotel: HotelListParams, index) => (
+        <Swiper.Item key={hotel._id}>
         <Image
             mode="aspectFill"
             style={{ width: '100%', height: '100%' }}
             onClick={() => handleHotelClick(hotel)}
-            src={hotel.hotelImage}
+            src={hotel.imageUrl}
         />
         </Swiper.Item>
       ))}
