@@ -259,7 +259,7 @@ const Index = () => {
                 }
             })
         }
-    }, [router.params, value5.length])
+    }, [])
 
     // 使用 useMemo 缓存静态数据
     const starOptions = useMemo(() => [

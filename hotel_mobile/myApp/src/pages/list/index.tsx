@@ -149,7 +149,7 @@ export default function HotelList() {
             // 构建 API 请求参数，包含筛选条件
             const apiParams: any = {
                 pageNo: 1,
-                pageSize: 20,
+                pageSize: 5,
             }
             
             // 添加筛选条件（如果有值）

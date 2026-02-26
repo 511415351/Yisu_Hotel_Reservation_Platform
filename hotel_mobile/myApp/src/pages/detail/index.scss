@@ -9,7 +9,19 @@
         height: 100%;
       }
     }
-  
+    
+    // 无图片状态
+    .no-images {
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #f5f5f5;
+      margin-bottom: 16px;
+      color: #999;
+      font-size: 14px;
+    }
+
     // 酒店信息区域
     .hotel-info-section {
       background-color: #fff;

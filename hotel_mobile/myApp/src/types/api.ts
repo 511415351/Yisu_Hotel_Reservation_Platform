@@ -19,7 +19,7 @@ export interface HotelParams {
     imageUrl: string[];
     hotelRooms: RoomParams[];
     address: string;
-    star: number;
+    stars: number;
     score: number;
     hasBreakfast: boolean;
     hasParking: boolean;
