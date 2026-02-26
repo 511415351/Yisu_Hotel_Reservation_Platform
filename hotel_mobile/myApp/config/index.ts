@@ -44,7 +44,7 @@ export default defineConfig<'vite'>(async (merge, { command, mode }) => {
       devServer: {
         proxy: {
           '/api': {
-            target: 'https://m1.apifoxmock.com/m1/7810839-7557920-default',
+            target: 'http://localhost:3000/',
             changeOrigin: true,
           },
         },

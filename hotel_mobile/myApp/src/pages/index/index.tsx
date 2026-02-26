@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useCallback, memo } from 'react'
+import { useState, useRef, useMemo, useCallback, memo, useEffect } from 'react'
 import Taro from '@tarojs/taro';
 import { View, Text} from '@tarojs/components'
 import { Button as NutButton, Input, Cascader, Cell, Picker } from '@nutui/nutui-react-taro'
@@ -8,6 +8,7 @@ import './index.scss'
 import { Image } from '@tarojs/components'
 import AdBanner from './AdBanner';
 import promoImage from '../../assets/images/ad/1.png';
+import { useRouter } from '@tarojs/taro'
 
 interface FilterButtonsProps {
     nearby: string | null;
@@ -124,6 +125,7 @@ const CitySelector = memo(({ value5, setIsVisibleDemo5 }: { value5: string[]; se
 ))
 
 const Index = () => {
+    const router = useRouter()
     const [isVisibleDemo5, setIsVisibleDemo5] = useState(false)
     const [value5, setValue5] = useState<string[]>([])
     const [dateTimeData, setDateTimeData] = useState<{
@@ -149,6 +151,71 @@ const Index = () => {
 
     const [showStarPicker, setShowStarPicker] = useState(false)
     const [showPricePicker, setShowPricePicker] = useState(false)
+
+    // 处理从列表页返回时的参数
+    useEffect(() => {
+        if (router.params) {
+            const params = router.params
+            
+            // 处理酒店名称
+            if (params.hotelName) {
+                try {
+                    hotelNameRef.current = decodeURIComponent(params.hotelName)
+                } catch (e) {
+                    hotelNameRef.current = params.hotelName
+                }
+            }
+            
+            // 处理城市选择
+            if (params.city) {
+                try {
+                    const city = decodeURIComponent(params.city)
+                    setValue5([city])
+                } catch (e) {
+                    setValue5([params.city])
+                }
+            } else {
+                // 默认城市
+                setValue5(['上海'])
+            }
+            
+            // 处理房间数据
+            if (params.roomNum || params.adultNum || params.childNum) {
+                setRoomData({
+                    roomNum: params.roomNum ? parseInt(params.roomNum) : 1,
+                    adultNum: params.adultNum ? parseInt(params.adultNum) : 1,
+                    childNum: params.childNum ? parseInt(params.childNum) : 0
+                })
+            }
+            
+            // 处理日期数据
+            if (params.checkInDate && params.checkOutDate) {
+                setDateTimeData({
+                    checkInDate: params.checkInDate,
+                    checkInTime: params.checkInTime || '',
+                    checkOutDate: params.checkOutDate,
+                    checkOutTime: params.checkOutTime || ''
+                })
+            }
+            
+            // 处理筛选条件
+            setFilters(prev => ({
+                ...prev,
+                star: params.star ? parseInt(params.star) || null : prev.star,
+                priceRange: params.priceRange || prev.priceRange,
+                nearby: params.nearby || prev.nearby,
+                hasBreakfast: params.hasBreakfast === 'true' ,
+                hasParking: params.hasParking === 'true' ,
+                // 更新显示文本
+                starText: params.star ? `${params.star}星` : '不限',
+                starIndex: params.star ? parseInt(params.star) : 0,
+                priceIndex: 0
+            }))
+        } else {
+            // 默认城市
+            setValue5(['上海'])
+        }
+    }, [router.params])
 
     // 使用 useMemo 缓存静态数据
     const starOptions = useMemo(() => [
@@ -357,7 +424,7 @@ const Index = () => {
 
                 {/* 查询按钮 */}
                 <View className="search-btn">
-                    <NutButton block type="primary" onClick={handleSearch}>查询酒店</NutButton>
+                    <button className="search-btn" onClick={handleSearch}>查询酒店</button>
                 </View>
             </View>
 

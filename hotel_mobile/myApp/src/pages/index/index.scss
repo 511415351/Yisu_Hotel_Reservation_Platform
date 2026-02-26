@@ -297,3 +297,13 @@
     color: #999;
   }
 }
+.search-btn{
+  margin-top: 20px;
+  background-color: rgb(45, 143, 254);
+   border-radius: 20px;
+}
+ button.search-btn:active {
+      background-color: #7ac1f8;           /* 更明显一点的蓝色，反馈清晰 */
+      transform: scale(0.98);               /* 轻微缩小，增加按压手感 (可选) */
+      box-shadow: 0 2px 4px rgba(0, 50, 100, 0.1);
+    }

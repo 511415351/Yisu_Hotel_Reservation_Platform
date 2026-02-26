@@ -30,9 +30,43 @@ export default function HotelList() {
             const params = { ...searchParams }
             Object.keys(router.params).forEach(key => {
                 try {
-                    params[key] = decodeURIComponent(router.params[key] || '')
+                    const value = router.params[key] || ''
+                    const decodedValue = typeof value === 'string' ? decodeURIComponent(value) : value
+                    
+                    // 根据字段名进行类型转换
+                    switch (key) {
+                        case 'star':
+                            params[key] = parseInt(decodedValue) || 0
+                            break
+                        case 'hasBreakfast':
+                        case 'hasParking':
+                            params[key] = decodedValue === 'true' || decodedValue === true
+                            break
+                        case 'roomNum':
+                        case 'adultNum':
+                        case 'childNum':
+                            params[key] = parseInt(decodedValue) || 0
+                            break
+                        default:
+                            params[key] = decodedValue
+                    }
                 } catch (e) {
-                    params[key] = router.params[key] || ''
+                    const value = router.params[key] || ''
+                    // 错误处理时也进行类型转换
+                    switch (key) {
+                        case 'star':
+                        case 'roomNum':
+                        case 'adultNum':
+                        case 'childNum':
+                            params[key] = parseInt(value) || 0
+                            break
+                        case 'hasBreakfast':
+                        case 'hasParking':
+                            params[key] = value === 'true' || value === true
+                            break
+                        default:
+                            params[key] = value
+                    }
                 }
             })
             setSearchParams(params)
@@ -85,30 +119,17 @@ export default function HotelList() {
             
             // 添加筛选条件（如果有值）
             if (searchParams.city) {
-                apiParams.city = searchParams.city
+                apiParams.location = searchParams.city
             }
             if (searchParams.hotelName) {
-                apiParams.hotelName = searchParams.hotelName
+                apiParams.keyword = searchParams.hotelName
             }
-            if (searchParams.checkInDate) {
-                apiParams.checkInDate = searchParams.checkInDate
-                apiParams.checkInTime = searchParams.checkInTime
+            if (searchParams.checkInDate&&searchParams.checkOutDate) {
+                apiParams.date = searchParams.checkInDate+'/'+searchParams.checkOutDate
             }
-            if (searchParams.checkOutDate) {
-                apiParams.checkOutDate = searchParams.checkOutDate
-                apiParams.checkOutTime = searchParams.checkOutTime
-            }
-            if (searchParams.roomNum) {
-                apiParams.roomNum = searchParams.roomNum
-            }
-            if (searchParams.adultNum) {
-                apiParams.adultNum = searchParams.adultNum
-            }
-            if (searchParams.childNum !== undefined) {
-                apiParams.childNum = searchParams.childNum
-            }
+            
             if(searchParams.star) {
-                apiParams.star = searchParams.star
+                apiParams.stars = searchParams.star
             }
             if(searchParams.priceRange) {
                 apiParams.priceRange = searchParams.priceRange
@@ -140,7 +161,14 @@ export default function HotelList() {
     // 把当前参数传回首页，让首页回填
     const params = { ...searchParams }
     const queryString = Object.keys(params)
-      .map(key => `${key}=${encodeURIComponent(params[key])}`)
+      .map(key => {
+          let value = params[key]
+          // 对于布尔值和数字类型，确保正确转换为字符串
+          if (typeof value === 'boolean' || typeof value === 'number') {
+              return `${key}=${encodeURIComponent(value.toString())}`
+          }
+          return `${key}=${encodeURIComponent(value || '')}`
+      })
       .join('&')
     
     Taro.navigateTo({
