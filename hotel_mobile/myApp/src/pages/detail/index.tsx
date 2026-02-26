@@ -39,6 +39,7 @@ export default function Index() {
     const [currentPage, setCurrentPage] = useState(1)
     const [pageSize, setPageSize] = useState(2)
     const [refreshing, setRefreshing] = useState(false)
+    const [swiperList, setSwiperList] = useState<string[]>([])
  // 获取酒店详情
     const fetchHotelDetail = async () => {
         if (!hotelId) return
@@ -54,8 +55,23 @@ export default function Index() {
             
             if (res) {
                 console.log('获取酒店详情成功', res)
-                setHotelDetail(res)
-                setRooms(res.hotelRooms || [])
+                // 1. 提取酒店主图 (它是字符串，包裹成数组)
+                const hotelImg = res.imageUrl ? [res.imageUrl] : []
+                // 2. 提取房间列表中的所有图片
+                // 注意：后端返回的数组 key 是 hotelRoom (没有 s)
+                const roomList = res.hotelRoom || []
+                const roomImgs = roomList.map(room => room.imageUrl).filter(img => !!img)
+                // 3. 合并数组供轮播图使用
+                const combinedImgs = [...hotelImg, ...roomImgs]
+                setSwiperList(combinedImgs)
+                // 4. 更新酒店详情 (为了防止 map 报错，我们将 imageUrl 修正为数组形式)
+                setHotelDetail({
+                    ...res,
+                    imageUrl: combinedImgs, // 这里存合并后的，或者只存 hotelImg 数组
+                    hotelRooms: roomList    // 统一字段名
+                })
+                // 5. 更新房间列表数据
+                setRooms(roomList)
             } else {
                 console.log('获取酒店详情成功，但返回数据为空')
                 // 如果返回数据为空，使用硬编码数据
@@ -202,18 +218,18 @@ export default function Index() {
             onRefresherRefresh={handleRefresh}
         >
             {/* 顶部轮播图 */}
-            {hotelDetail.imageUrl && hotelDetail.imageUrl.length > 0 ? (
+            {swiperList && swiperList.length > 0 ? (
                 <Swiper
                     className='detail-swiper'
                     height='250px'
                     autoPlay
                     loop
                 >
-                    {hotelDetail.imageUrl.map((img, index) => (
+                    {swiperList.map((imgUrl, index) => (
                         <SwiperItem key={index}>
                             <Image
                                 className='swiper-image'
-                                src={img}
+                                src={imgUrl}
                                 mode='aspectFill'
                                 lazyLoad
                             />
@@ -221,8 +237,8 @@ export default function Index() {
                     ))}
                 </Swiper>
             ) : (
-                <View className='no-images'>
-                    <Text>暂无图片</Text>
+                <View className='no-images' style={{height:'250px', background:'#eee', textAlign:'center', lineHeight:'250px'}}>
+                    <Text>暂无酒店图片</Text>
                 </View>
             )}
 
@@ -281,11 +297,13 @@ export default function Index() {
 
             {/* 房间列表 */}
             <View className='room-list'>
+                {/* 仅显示当前分页的房间 */}
                 {rooms.slice(0, currentPage * pageSize).map((room) => (
                     <View key={room.id} className='room-item'>
                         <Image
                             className='room-image'
-                                src={room.roomPicture || ''}
+                            // 后端返回的字段是 room.imageUrl
+                            src={room.imageUrl || ''} 
                             mode='aspectFill'
                             lazyLoad
                         />
@@ -293,9 +311,14 @@ export default function Index() {
                             <View className='room-name'>
                                 <Text className='name'>{room.roomName}</Text>
                             </View>
-                            
+                            {/* 房间设施标签展示 */}
+                            <View className='room-facilities' style={{fontSize:'12px', color:'#999', margin:'4px 0'}}>
+                                {room.hasWifi && <Text> ·WIFI </Text>}
+                                {room.hasWindow && <Text> ·有窗 </Text>}
+                                {room.hasTV && <Text> ·电视 </Text>}
+                            </View>
                             <View className='room-desc'>
-                                <Text>剩🛏️ {room.number}间</Text>
+                                <Text>剩🛏️ {room.number} 间</Text>
                             </View>
                             <View className='room-footer'>
                                 <View className='price'>
@@ -308,7 +331,7 @@ export default function Index() {
                                     size='small'
                                     onClick={() => handleBooking(room)}
                                 >
-                                    立即预订
+                                    预订
                                 </Button>
                             </View>
                         </View>
