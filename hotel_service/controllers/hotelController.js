@@ -76,9 +76,15 @@ const getHotelList = async (req, res) => {
         if (hasParking === 'true') requiredTags.push("免费停车");
         if (hasBreakfast === 'true') requiredTags.push("含早餐");
         if (requiredTags.length > 0) {
-            whereClause.tags = {
-                hasEvery: requiredTags
-            };
+            whereClause.AND = requiredTags.map(tag => ({
+                tags: {
+                    some: {
+                        name: { // 请确认你的标签表中存储名字的字段是 tagName 还是 name
+                            equals: tag
+                        }
+                    }
+                }
+            }));
         }
 
         const hotels = await prisma.hotel.findMany({
@@ -103,7 +109,7 @@ const getHotelList = async (req, res) => {
                 imageUrl: hotel.imageUrl || "",
                 // --- 修复点：如果 tags 已经是字符串数组，直接返回即可 ---
                 // --- 如果 tags 里面存的是对象，请先确保 tags 不为空 ---
-                tags: Array.isArray(hotel.tags) ? hotel.tags : [],
+                tags: hotel.tags ? hotel.tags.map(t => t.tagName || t.name) : [],
                 lowestPrice: lowestPrice
             };
         });
