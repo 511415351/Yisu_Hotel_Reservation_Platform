@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View } from '@tarojs/components';
-import { Form, InputNumber, Cell, Popup, Button } from '@nutui/nutui-react-taro';
+import { InputNumber, Cell, Popup, Button } from '@nutui/nutui-react-taro';
 
 interface RoomNumberProps {
   onChange?: (data: {
@@ -11,20 +11,22 @@ interface RoomNumberProps {
 }
 
 const RoomNumber: React.FC<RoomNumberProps> = ({ onChange }) => {
-    const [form] = Form.useForm();
     const [visible, setVisible] = useState(false);
     const [values, setValues] = useState({ roomNum: 1, adultNum: 1, childNum: 0 });
     const [tempValues, setTempValues] = useState({ roomNum: 1, adultNum: 1, childNum: 0 });
+    
     const openPopup = () => {
         setTempValues({ ...values });
         setVisible(true);
     };
+    
     const updateItemValue = (field: string, val: number) => {
         setTempValues(prev => ({
-        ...prev,
-        [field]: val
+            ...prev,
+            [field]: val
         }));
     };
+    
     const handleConfirm = () => {
         setValues({ ...tempValues }); // 同步数据
         setVisible(false); 
@@ -41,6 +43,7 @@ const RoomNumber: React.FC<RoomNumberProps> = ({ onChange }) => {
             onChange({ ...values });
         }
     }, []);
+  
   return (
     <View className="page">
       {/* 1. 外部显示的 Cell */}
@@ -62,33 +65,33 @@ const RoomNumber: React.FC<RoomNumberProps> = ({ onChange }) => {
         <View style={{ padding: '20px' }}>
           <h3 style={{ textAlign: 'center', marginBottom: '20px' }}>修改数量</h3>
           
-          <Form
-            form={form}
-          >
-            <Form.Item
-              label="房间数量"
-              name="roomNum"
-            >
-              <InputNumber value={tempValues.roomNum}
-                onChange={(val) => updateItemValue('roomNum', Number(val))} />
-            </Form.Item>
+          <View>
+            <View style={{ marginBottom: '20px' }}>
+              <View style={{ marginBottom: '8px', fontSize: '14px' }}>房间数量</View>
+              <InputNumber 
+                value={tempValues.roomNum}
+                onChange={(val) => updateItemValue('roomNum', Number(val))} 
+                //size="large"
+              />
+            </View>
 
-            <Form.Item
-              label="成人数量"
-              name="adultNum"
-            >
-              <InputNumber value={tempValues.adultNum}
-                onChange={(val) => updateItemValue('adultNum', Number(val))} />
-            </Form.Item>
+            <View style={{ marginBottom: '20px' }}>
+              <View style={{ marginBottom: '8px', fontSize: '14px' }}>成人数量</View>
+              <InputNumber 
+                value={tempValues.adultNum}
+                onChange={(val) => updateItemValue('adultNum', Number(val))} 
+                //size="large"
+              />
+            </View>
 
-            <Form.Item
-              label="儿童数量"
-              name="childNum"
-              getValueFromEvent={(val) => val}
-            >
-              <InputNumber value={tempValues.childNum}
-                onChange={(val) => updateItemValue('childNum', Number(val))} />
-            </Form.Item>
+            <View style={{ marginBottom: '20px' }}>
+              <View style={{ marginBottom: '8px', fontSize: '14px' }}>儿童数量</View>
+              <InputNumber 
+                value={tempValues.childNum}
+                onChange={(val) => updateItemValue('childNum', Number(val))} 
+                //size="large"
+              />
+            </View>
 
             {/* 3. 关闭按钮 */}
             <View style={{ marginTop: '30px' }}>
@@ -97,10 +100,10 @@ const RoomNumber: React.FC<RoomNumberProps> = ({ onChange }) => {
                 type="primary" 
                 onClick={handleConfirm}
               >
-                确定回填
+                确定
               </Button>
             </View>
-          </Form>
+          </View>
         </View>
       </Popup>
     </View>

@@ -213,54 +213,10 @@ const Index = () => {
             }))
         } else {
             // 默认城市
-            setValue5(['上海'])
+            setValue5([])
         }
     }, [router.params])
     
-    // 获取当前位置并设置为默认城市
-    useEffect(() => {
-        // 只有在没有路由参数且 value5 为空时才获取定位
-        if (!router.params && value5.length === 0) {
-            // 1. 获取地理坐标
-            Taro.getLocation({
-                type: 'gcj02',
-                success: (res) => {
-                    console.log('获取位置成功:', res)
-                    // 2. 使用逆地理编码获取城市名称
-                    Taro.request({
-                        url: `https://apis.map.qq.com/ws/geocoder/v1/`,
-                        method: 'GET',
-                        data: {
-                            location: `${res.latitude},${res.longitude}`,
-                            key: 'OB4BZ-D4W3U-B7VVO-4PJWW-6TKDJ-WPB77' // 腾讯地图 API key
-                        },
-                        success: (geoRes) => {
-                            console.log('逆地理编码成功:', geoRes)
-                            if (geoRes.data && geoRes.data.result) {
-                                const city = geoRes.data.result.address_component.city
-                                if (city) {
-                                    // 移除城市名称末尾的"市"字
-                                    const cityName = city.replace('市', '')
-                                    setValue5([cityName])
-                                }
-                            }
-                        },
-                        fail: (geoErr) => {
-                            console.error('逆地理编码失败:', geoErr)
-                            // 失败时使用默认城市
-                            setValue5(['上海'])
-                        }
-                    })
-                },
-                fail: (err) => {
-                    console.error('获取位置失败:', err)
-                    // 失败时使用默认城市
-                    setValue5(['上海'])
-                }
-            })
-        }
-    }, [])
-
     // 使用 useMemo 缓存静态数据
     const starOptions = useMemo(() => [
         { value: 0, text: '不限' },
