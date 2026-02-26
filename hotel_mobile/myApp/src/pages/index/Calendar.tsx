@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { Cell, Calendar, DatePicker, CalendarDay } from '@nutui/nutui-react-taro'
 
 const padZero = (num: number | string, targetLength = 2) => {
@@ -9,8 +9,33 @@ const padZero = (num: number | string, targetLength = 2) => {
   return str
 }
 
-const CalendarCon = () => {
-  const [date, setDate] = useState<string[]>([])
+interface CalendarConProps {
+  onChange?: (data: {
+    checkInDate: string; // 入住日期，格式：YYYY-MM-DD
+    checkInTime: string; // 入住时间，格式：HH:MM:SS
+    checkOutDate: string; // 离宿日期，格式：YYYY-MM-DD
+    checkOutTime: string; // 离宿时间，格式：HH:MM:SS
+  }) => void;
+}
+
+const CalendarCon: React.FC<CalendarConProps> = ({ onChange }) => {
+   // 获取当前日期和明天的日期
+  const getDefaultDates = () => {
+    const today = new Date()
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    
+    const formatDate = (date: Date) => {
+      const year = date.getFullYear()
+      const month = padZero(date.getMonth() + 1)
+      const day = padZero(date.getDate())
+      return `${year}-${month}-${day}`
+    }
+    
+    return [formatDate(today), formatDate(tomorrow)]
+  }
+
+  const [date, setDate] = useState<string[]>(getDefaultDates())
   const [isVisible, setIsVisible] = useState(false)
 
   const disableDate = (date: CalendarDay) => {
@@ -18,11 +43,30 @@ const CalendarCon = () => {
   }
 
   const [show, setShow] = useState(false)
-  const [dpAbled, setDatePickerAbled] = useState([false, false])
+  const [dpAbled, setDatePickerAbled] = useState([true, true])
   const [desc1, setDesc1] = useState('10:00:00')
   const [desc2, setDesc2] = useState('20:00:00')
   const desc = useRef(0)
+// 计算日历的开始和结束日期
+  const getCalendarRange = () => {
+    const today = new Date()
+    const startDate = new Date(today)
+    startDate.setFullYear(startDate.getFullYear() - 1) // 可以选择一年前的日期
+    
+    const endDate = new Date(today)
+    endDate.setFullYear(endDate.getFullYear() + 1) // 可以选择一年后的日期
+    
+    const formatDate = (date: Date) => {
+      const year = date.getFullYear()
+      const month = padZero(date.getMonth() + 1)
+      const day = padZero(date.getDate())
+      return `${year}-${month}-${day}`
+    }
+    
+    return { startDate: formatDate(startDate), endDate: formatDate(endDate) }
+  }
 
+  const calendarRange = getCalendarRange()
   const setChooseValue = (chooseData: any) => {
     console.log(
       'setChooseValue',
@@ -32,7 +76,18 @@ const CalendarCon = () => {
     const dateArr = [...[chooseData[0][3], chooseData[1][3]]]
     setDate([...dateArr])
   }
-  const confirm = (values: (string | number)[], options: any[]) => {
+  // 当日期或时间变化时，通知父组件
+  useEffect(() => {
+    if (date && date.length === 2 && onChange) {
+      onChange({
+        checkInDate: date[0],
+        checkInTime: desc1,
+        checkOutDate: date[1],
+        checkOutTime: desc2,
+      })
+    }
+  }, [date, desc1, desc2, onChange])
+  const confirm = (_values: (string | number)[], options: any[]) => {
     if (desc.current === 1) {
       setDesc1(
         options.map((option) => padZero(parseInt(option.text))).join(':')
@@ -80,8 +135,8 @@ const CalendarCon = () => {
         visible={isVisible}
         defaultValue={date}
         type="range"
-        startDate="2024-01-01"
-        endDate="2025-09-10"
+       startDate={calendarRange.startDate}
+        endDate={calendarRange.endDate}
         disableDate={disableDate}
         firstDayOfWeek={1}
         onDayClick={(date) => {

@@ -1,10 +1,251 @@
-.list-wrapper {
-    background-color: #f7f8fa; // 浅灰色背景
-    padding: 10px;
+/* Hotel List Page Styles */
+.hotel-list-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
 
+/* Filter Bar */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 12px;
+  position: relative;
+  z-index: 10;
+  flex-wrap: wrap;
+  gap: 8px;
+  
+  &:active {
+    background-color: #f9f9f9;
+  }
+}
+
+.filter-content {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  margin-right: 8px;
+}
+
+.filter-icon {
+  font-size: 16px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.filter-text {
+  font-size: 14px;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-btn {
+  min-width: 60px;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+/* Filter Options Bar */
+.filter-options-bar {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 12px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-option-label {
+  font-size: 13px;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.filter-option-select {
+  min-width: 80px;
+  font-size: 13px;
+}
+
+:global {
+  .nut-picker {
+    width: 100%;
+  }
+  
+  .nut-button--small {
+    padding: 4px 12px;
+    font-size: 12px;
+    height: 28px;
+    line-height: 20px;
+  }
+  
+  .nut-button--primary {
+    background-color: #1890ff;
+    border-color: #1890ff;
+  }
+  
+  .nut-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+  }
+}
+
+/* Quick Filters */
+.quick-filters {
+  display: flex;
+  padding: 0 16px 12px;
+  background-color: #fff;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* List Header */
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background-color: #fff;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.count {
+  font-size: 14px;
+  color: #666;
+}
+
+.sort {
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  
+  &:active {
+    color: #1890ff;
+  }
+}
+
+/* List Wrapper */
+.list-wrapper {
+  flex: 1;
+  padding-bottom: 20px;
+}
+
+/* Card Styles */
+:global {
+  .nut-card {
+    margin: 0 16px 12px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+  
+  .nut-card__content {
+    padding: 12px;
+  }
+  
+  .nut-card__title {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  
+  .nut-card__price {
+    font-size: 18px;
+    font-weight: 600;
+    color: #ff4d4f;
+    margin-top: 8px;
+  }
+  
+  .nut-card__shop-description {
+    font-size: 12px;
+    color: #999;
+    margin-top: 4px;
+  }
+  
+  .nut-card__shop-name {
+    font-size: 12px;
+    color: #1890ff;
+    margin-top: 8px;
+  }
+}
+
+/* Empty State */
+.empty {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  font-size: 14px;
+  color: #999;
+  background-color: #fff;
+  margin: 16px;
+  border-radius: 8px;
+}
+
+/* Search Prolist Attr */
+.search_prolist_attr {
+  display: inline-flex;
+  margin: 3px 0 1px;
+  height: 15px;
+}
+
+.word {
+  display: inline-block;
+  padding: 0 5px;
+  border-radius: 1px;
+  font-size: 10px;
+  height: 15px;
+  line-height: 15px;
+  color: #999;
+  background-color: #f2f2f7;
+  margin-right: 5px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 375px) {
+  .filter-text {
+    font-size: 13px;
+  }
+  
+  .list-header {
+    padding: 10px 14px;
+  }
+  
+  :global {
     .nut-card {
-        margin-bottom: 12px; // 卡片间距
-        border-radius: 8px;   // 圆角
-        overflow: hidden;
+      margin: 0 14px 10px;
     }
+  }
+}
+
+/* Loading State */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  font-size: 14px;
+  color: #999;
 }
