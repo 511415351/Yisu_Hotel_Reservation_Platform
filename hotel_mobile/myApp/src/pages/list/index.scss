@@ -17,6 +17,8 @@
   margin-bottom: 12px;
   position: relative;
   z-index: 10;
+  flex-wrap: wrap;
+  gap: 8px;
   
   &:active {
     background-color: #f9f9f9;
@@ -27,12 +29,14 @@
   display: flex;
   align-items: center;
   flex: 1;
-  margin-right: 12px;
+  min-width: 0;
+  margin-right: 8px;
 }
 
 .filter-icon {
   font-size: 16px;
   margin-right: 8px;
+  flex-shrink: 0;
 }
 
 .filter-text {
@@ -41,6 +45,8 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  flex: 1;
+  min-width: 0;
 }
 
 .filter-btn {
@@ -49,7 +55,40 @@
   z-index: 1;
 }
 
+/* Filter Options Bar */
+.filter-options-bar {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #fff;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 12px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-option-label {
+  font-size: 13px;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.filter-option-select {
+  min-width: 80px;
+  font-size: 13px;
+}
+
 :global {
+  .nut-picker {
+    width: 100%;
+  }
+  
   .nut-button--small {
     padding: 4px 12px;
     font-size: 12px;

@@ -1,7 +1,7 @@
 import {  useEffect, useState } from 'react'
 import Taro from '@tarojs/taro';
 import { View, Text ,ScrollView} from '@tarojs/components'
-import { Card,Button,Tag} from '@nutui/nutui-react-taro'
+import { Card,Button,Tag,Picker} from '@nutui/nutui-react-taro'
 import  api  from '../../api/index' 
 import { HotelListParams } from '../../types/api' 
 import './index.scss'
@@ -25,6 +25,31 @@ export default function HotelList() {
         hasBreakfast: false,
         hasParking: false,
     })
+    
+    // 下拉选择器状态
+    const [showStarPicker, setShowStarPicker] = useState(false)
+    const [showPricePicker, setShowPricePicker] = useState(false)
+    const [starText, setStarText] = useState('不限')
+    const [priceText, setPriceText] = useState('不限')
+    
+    // 星级选项
+    const starOptions = [
+        { value: 0, text: '不限' },
+        { value: 1, text: '1星' },
+        { value: 2, text: '2星' },
+        { value: 3, text: '3星' },
+        { value: 4, text: '4星' },
+        { value: 5, text: '5星' }
+    ]
+    
+    // 价格范围选项
+    const priceOptions = [
+        { value: '', text: '不限' },
+        { value: '0-200', text: '200元以下' },
+        { value: '201-500', text: '201-500元' },
+        { value: '501-800', text: '501-800元' },
+        { value: '801+', text: '800元以上' }
+    ]
     useEffect(() => {
         if (router.params) {
             const params = { ...searchParams }
@@ -70,6 +95,16 @@ export default function HotelList() {
                 }
             })
             setSearchParams(params)
+            
+            // 初始化下拉选择器的显示文本
+            if (params.star) {
+                const starOption = starOptions.find(opt => opt.value === params.star)
+                if (starOption) setStarText(starOption.text)
+            }
+            if (params.priceRange) {
+                const priceOption = priceOptions.find(opt => opt.value === params.priceRange)
+                if (priceOption) setPriceText(priceOption.text)
+            }
         }
     }, [router.params])
     // // 从路由参数中解析筛选条件
@@ -156,7 +191,47 @@ export default function HotelList() {
         
     }
     // 酒店每一个列表项中的信息维度(酒店名/评分/地址/价格等)如有更好的用户体验可以自行定义
-     // 跳转到搜索页修改条件
+     // 处理星级选择确认
+    const handleStarConfirm = (options: any) => {
+        const selected = options[0]
+        const starValue = selected.value === 0 ? 0 : selected.value
+        setStarText(selected.text)
+        setSearchParams(prev => ({ ...prev, star: starValue }))
+        setShowStarPicker(false)
+    }
+    
+    // 处理价格选择确认
+    const handlePriceConfirm = (options: any) => {
+        const selected = options[0]
+        setPriceText(selected.text)
+        setSearchParams(prev => ({ ...prev, priceRange: selected.value }))
+        setShowPricePicker(false)
+    }
+    
+    // 处理快捷筛选标签点击
+    const handleQuickFilter = (type: string, value: any) => {
+        setSearchParams(prev => {
+            const newParams = { ...prev }
+            switch (type) {
+                case 'priceRange':
+                    newParams.priceRange = newParams.priceRange === value ? '' : value
+                    setPriceText(newParams.priceRange ? priceOptions.find(opt => opt.value === newParams.priceRange)?.text || '不限' : '不限')
+                    break
+                case 'hasBreakfast':
+                    newParams.hasBreakfast = !newParams.hasBreakfast
+                    break
+                case 'hasParking':
+                    newParams.hasParking = !newParams.hasParking
+                    break
+                case 'nearby':
+                    newParams.nearby = newParams.nearby === 'subway' ? '' : 'subway'
+                    break
+            }
+            return newParams
+        })
+    }
+    
+    // 跳转到搜索页修改条件
   const goToSearch = () => {
     // 把当前参数传回首页，让首页回填
     const params = { ...searchParams }
@@ -218,23 +293,63 @@ export default function HotelList() {
           <Button size='small' type='primary' className='filter-btn'>修改</Button>
         </View>
   
+        {/* 筛选选项栏 */}
+        <View className='filter-options-bar'>
+          <View className='filter-option'>
+            <Text className='filter-option-label'>星级:</Text>
+            <View 
+              className='filter-option-select'
+              onClick={() => setShowStarPicker(true)}
+            >
+              {starText} ▼
+            </View>
+          </View>
+          <View className='filter-option'>
+            <Text className='filter-option-label'>价格:</Text>
+            <View 
+              className='filter-option-select'
+              onClick={() => setShowPricePicker(true)}
+            >
+              {priceText} ▼
+            </View>
+          </View>
+        </View>
+        
+        {/* 星级选择器 */}
+        <Picker
+          visible={showStarPicker}
+          options={starOptions}
+          title='选择星级'
+          onClose={() => setShowStarPicker(false)}
+          onConfirm={handleStarConfirm}
+        />
+        
+        {/* 价格选择器 */}
+        <Picker
+          visible={showPricePicker}
+          options={priceOptions}
+          title='选择价格范围'
+          onClose={() => setShowPricePicker(false)}
+          onConfirm={handlePriceConfirm}
+        />
+  
         {/* 快捷筛选标签 */}
         <View className='quick-filters'>
           <Tag 
             type={searchParams.priceRange === '0-200' ? 'primary' : 'default'}
-            onClick={() => {/* 快速筛选逻辑 */}}
+            onClick={() => handleQuickFilter('priceRange', '0-200')}
           >¥200以下</Tag>
           <Tag 
-            type={searchParams.hasBreakfast === '1' ? 'primary' : 'default'}
-            onClick={() => {/* 快速筛选逻辑 */}}
+            type={searchParams.hasBreakfast ? 'primary' : 'default'}
+            onClick={() => handleQuickFilter('hasBreakfast', null)}
           >含早餐</Tag>
           <Tag 
-            type={searchParams.hasParking === '1' ? 'primary' : 'default'}
-            onClick={() => {/* 快速筛选逻辑 */}}
+            type={searchParams.hasParking ? 'primary' : 'default'}
+            onClick={() => handleQuickFilter('hasParking', null)}
           >免费停车</Tag>
           <Tag 
             type={searchParams.nearby === 'subway' ? 'primary' : 'default'}
-            onClick={() => {/* 快速筛选逻辑 */}}
+            onClick={() => handleQuickFilter('nearby', 'subway')}
           >近地铁</Tag>
         </View>
             {/* 列表标题/统计 */}
