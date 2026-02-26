@@ -63,9 +63,13 @@ const getHotelList = async (req, res) => {
         }
         if (priceRange && priceRange.includes('-')) {
             const [min, max] = priceRange.split('-').map(Number);
-            whereClause.price = {
-                gte: min,
-                lte: max
+            whereClause.roomTypes = {
+                some: {
+                    price: {
+                        gte: min,
+                        lte: max
+                    }
+                }
             };
         }
         let requiredTags = [];
@@ -80,7 +84,8 @@ const getHotelList = async (req, res) => {
         const hotels = await prisma.hotel.findMany({
             where: whereClause,
             include: {
-                roomTypes: true // 确保你的 Prisma Schema 里的关联名称是 roomTypes
+                roomTypes: true,
+                tags: true
             }
         });
 
