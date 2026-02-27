@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Taro, { useRouter } from '@tarojs/taro'
 import { View, Image, ScrollView, Text } from '@tarojs/components'
-import { Swiper, SwiperItem, Cell, Button, Divider, Rate, Tag, Empty } from '@nutui/nutui-react-taro'
+import { Swiper, SwiperItem, Cell, Button, Divider, Rate, Tag, Empty, Space } from '@nutui/nutui-react-taro'
 import './index.scss'
 import { HotelParams,RoomParams} from '../../types/api'
 import  api  from '../../api/index' 
@@ -50,8 +50,9 @@ export default function Index() {
         
         try {
             // 调用接口获取酒店详情
+            console.log(`获取酒店详情:hotelId:${hotelId}`)
             const res = await api.getHotelDetail(hotelId)
-            
+           
             if (res) {
                 console.log('获取酒店详情成功', res)
                 setHotelDetail(res)
@@ -63,12 +64,19 @@ export default function Index() {
             }
         } catch (error) {
             console.error('获取酒店详情失败', error)
+            if(error.data){
+                console.log('酒店详情获取失败，但是返回了数据，使用返回数据')
+                setHotelDetail(error.data)
+                setRooms(error.data.hotelRoom || [])
+            }else{
             Taro.showToast({
                 title: '加载酒店信息失败，使用默认数据',
                 icon: 'none'
-            })
-            // 请求失败时使用硬编码数据
+                
+            }) // 请求失败时使用硬编码数据
             useHardcodedData()
+            }
+           
         } finally {
             setLoading(false)
             setRefreshing(false)
@@ -170,7 +178,7 @@ export default function Index() {
     const handleBooking = (room) => {
         Taro.showToast({
             title: `预订${room.roomName}`,
-            icon: 'none'
+            icon: 'success'
         })}
     // 拨打酒店电话
     const handleCall = () => {
@@ -255,7 +263,7 @@ export default function Index() {
                    )}
                    {hotelDetail.hasParking && (
                     <Tag type='info' round>
-                        含停车
+                        可停车
                     </Tag>
                    )}
                 </View>
@@ -296,6 +304,31 @@ export default function Index() {
                             
                             <View className='room-desc'>
                                 <Text>剩🛏️ {room.number}间</Text>
+                            </View>
+
+                            <View className='room-tags'>
+                            <Space>
+                            {room.hasTV && (
+                                <Tag type='info' >
+                                    含电视
+                                </Tag>
+                            )}
+                             {room.hasWifi && (
+                                <Tag type='info' >
+                                    含Wifi
+                                </Tag>
+                            )}
+                            {room.hasBathtub && (
+                                <Tag type='info' >
+                                    含浴缸
+                                </Tag>
+                            )}
+                            {room.hasWindow && (
+                                <Tag type='info' >
+                                    含窗户
+                                </Tag>
+                            )}
+                            </Space>
                             </View>
                             <View className='room-footer'>
                                 <View className='price'>

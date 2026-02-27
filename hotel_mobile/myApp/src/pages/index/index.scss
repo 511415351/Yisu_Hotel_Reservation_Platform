@@ -16,7 +16,7 @@
 // /* 轮播图高度固定（推荐固定，不用 flex 填充） */
 // .ad-banner-swiper {
 //   width: 100%;
-//   height: 220px;
+//   height: 220rpx;
 // }
 
 // /* 小程序用 image，不是 img */
@@ -27,33 +27,33 @@
 
 // /* 表单整体区域 */
 // // .section {
-// //   // margin: 16px;
-// //   padding: 20px;
+// //   // margin: 16rpx;
+// //   padding: 20rpx;
 // //   background-color: #ffffff;
-// //   border-radius: 16px;
-// //   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+// //   border-radius: 16rpx;
+// //   box-shadow: 0 6rpx 16rpx rgba(0, 0, 0, 0.08);
 // //   box-sizing: border-box;
-// //   margin: -20px 8px 0 8px;
+// //   margin: -20rpx 8rpx 0 8rpx;
   
 // // }
 // .section {
-//   margin: -20px 8px 5px 8px;  // 关键：负margin
-//   padding: 20px;
+//   margin: -20rpx 8rpx 5rpx 8rpx;  // 关键：负margin
+//   padding: 20rpx;
 //   background: #fff;
-//   border-radius: 20px 20px 0 0;
-//   box-shadow: 0 -4px 16px rgba(0,0,0,0.08);
+//   border-radius: 20rpx 20rpx 0 0;
+//   box-shadow: 0 -4rpx 16rpx rgba(0,0,0,0.08);
 //   position: relative;
 //   z-index: 2;
 // }
 
 // /* Cell 组件间距 */
 // .section .nut-cell {
-//   margin-bottom: 12px;
+//   margin-bottom: 12rpx;
 // }
 
 // /* 日历、房间选择间距 */
 // .section > * {
-//   margin-bottom: 16px;
+//   margin-bottom: 16rpx;
 // }
 
 // /* 输入框优化 */
@@ -63,54 +63,54 @@
 
 // /* 查询按钮间距 */
 // .section .nut-button {
-//   margin-top: 10px;
+//   margin-top: 10rpx;
 // }
 // .promo {
-//   margin: 20px 16px 30px 16px;
-//   border-radius: 16px;
+//   margin: 20rpx 16rpx 30rpx 16rpx;
+//   border-radius: 16rpx;
 //   overflow: hidden;
 //   position: relative;
-//   box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+//   box-shadow: 0 6rpx 16rpx rgba(0,0,0,0.1);
 // }
 
 // .promo-img {
 //   width: 100%;
-//   height: 200px;
+//   height: 200rpx;
 // }
 
 // .promo-text {
 //   position: absolute;
-//   left: 16px;
-//   top: 16px;
+//   left: 16rpx;
+//   top: 16rpx;
 //   color: #fff;
 // }
 
 // .promo-title {
-//   font-size: 20px;
+//   font-size: 20rpx;
 //   font-weight: bold;
 // }
 
 .index {
   background-color: #f5f5f5;
-  min-height: 100vh;
-  padding-bottom: 20px;
+  min-height: 100%;
+  padding-bottom: 40rpx;
 }
 
 .section {
   background-color: #fff;
-  margin: 12px 16px;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  margin: 24rpx 32rpx;
+  border-radius: 24rpx;
+  padding: 32rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0,0,0,0.05);
 }
 
 .filter-section {
-  margin: 16px 0;
+  margin: 24rpx 0;
   
   .filter-label {
-    font-size: 14px;
+    font-size: 28rpx;
     color: #666;
-    margin-bottom: 8px;
+    margin-bottom: 16rpx;
     display: block;
   }
   
@@ -119,89 +119,89 @@
   .keyword-options {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 12rpx;
   }
 }
 
 .form-section {
-  margin: 16px 0;
+  margin: 24rpx 0;
   
   .hotel-name-input {
-    border: 1px solid #eee;
-    border-radius: 8px;
-    padding: 10px 12px;
-    font-size: 14px;
+    border: 2rpx solid #eee;
+    border-radius: 16rpx;
+    padding: 20rpx 24rpx;
+    font-size: 24rpx;
     width: 100%;
   }
 }
 
 .search-btn {
-  margin-top: 20px;
+  margin-top: 40rpx;
 }
 
 .promo {
-  margin: 20px 16px;
-  border-radius: 16px;
+  margin: 48rpx 32rpx;
+  border-radius: 32rpx;
   overflow: hidden;
   position: relative;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  box-shadow: 0 12rpx 32rpx rgba(0,0,0,0.1);
   
   .promo-img {
     width: 100%;
-    height: 200px;
+    height: 400rpx;
   }
   
   .promo-text {
     position: absolute;
-    left: 20px;
-    top: 20px;
+    left: 40rpx;
+    top: 40rpx;
     color: #fff;
     z-index: 1;
     
     .promo-title {
-      font-size: 24px;
+      font-size: 48rpx;
       font-weight: bold;
-      margin-bottom: 4px;
+      margin-bottom: 8rpx;
       display: block;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      text-shadow: 0 4rpx 8rpx rgba(0,0,0,0.3);
     }
     
     .promo-subtitle {
-      font-size: 14px;
+      font-size: 28rpx;
       opacity: 0.9;
       display: block;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+      text-shadow: 0 2rpx 4rpx rgba(0,0,0,0.3);
     }
   }
 }
 .filter-row {
   display: flex;
-  gap: 12px;
-  margin: 16px 0;
+  gap: 24rpx;
+  margin: 32rpx 0;
   
   .filter-item {
     flex: 1;
     
     .filter-label {
-      font-size: 12px;
+      font-size: 24rpx;
       color: #999;
-      margin-bottom: 4px;
+      margin-bottom: 8rpx;
       display: block;
     }
     
     .filter-select {
-      border: 1px solid #eee;
-      border-radius: 8px;
-      padding: 10px 12px;
+      border: 2rpx solid #eee;
+      border-radius: 16rpx;
+      padding: 20rpx 24rpx;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      font-size: 14px;
+      font-size: 28rpx;
       color: #333;
       background-color: #f8f8f8;
       
       .arrow {
-        font-size: 12px;
+        font-size: 24rpx;
         color: #999;
       }
     }
@@ -210,37 +210,37 @@
 
 // Cell 样式
 .filter-cell {
-  margin: 8px 0;
-  border-radius: 8px;
+  margin: 16rpx 0;
+  border-radius: 16rpx;
   overflow: hidden;
-  border: 1px solid #f0f0f0;
+  border: 2rpx solid #f0f0f0;
 }
 .hotel-list-page {
   background-color: #f5f5f5;
-  min-height: 100vh;
+  min-height: 100%;
 }
 
 .filter-bar {
   background-color: #fff;
-  padding: 12px 16px;
+  padding: 24rpx 32rpx;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom: 1px solid #eee;
+  border-bottom: 2rpx solid #eee;
   
   .filter-content {
     flex: 1;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 16rpx;
     overflow: hidden;
     
     .filter-icon {
-      font-size: 16px;
+      font-size: 32rpx;
     }
     
     .filter-text {
-      font-size: 14px;
+      font-size: 28rpx;
       color: #333;
       white-space: nowrap;
       overflow: hidden;
@@ -249,19 +249,19 @@
   }
   
   .filter-btn {
-    margin-left: 12px;
+    margin-left: 24rpx;
     flex-shrink: 0;
   }
 }
 
 .quick-filters {
   background-color: #fff;
-  padding: 8px 16px;
+  padding: 16rpx 32rpx;
   display: flex;
-  gap: 8px;
+  gap: 16rpx;
   overflow-x: auto;
   white-space: nowrap;
-  border-bottom: 1px solid #eee;
+  border-bottom: 2rpx solid #eee;
   
   &::-webkit-scrollbar {
     display: none;
@@ -270,40 +270,40 @@
 
 .list-header {
   background-color: #fff;
-  padding: 12px 16px;
+  padding: 24rpx 32rpx;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 1px;
+  margin-top: 2rpx;
   
   .count {
-    font-size: 14px;
+    font-size: 28rpx;
     color: #666;
   }
   
   .sort {
-    font-size: 14px;
+    font-size: 28rpx;
     color: #333;
   }
 }
 
 .list-wrapper {
-  padding: 0 16px;
+  padding: 0 32rpx;
   background-color: #fff;
   
   .empty, .loading {
     text-align: center;
-    padding: 40px 0;
+    padding: 80rpx 0;
     color: #999;
   }
 }
 .search-btn{
-  margin-top: 20px;
+  margin-top: 40rpx;
   background-color: rgb(45, 143, 254);
-   border-radius: 20px;
+   border-radius: 40rpx;
 }
  button.search-btn:active {
       background-color: #7ac1f8;           /* 更明显一点的蓝色，反馈清晰 */
       transform: scale(0.98);               /* 轻微缩小，增加按压手感 (可选) */
-      box-shadow: 0 2px 4px rgba(0, 50, 100, 0.1);
+      box-shadow: 0 4rpx 8rpx rgba(0, 50, 100, 0.1);
     }

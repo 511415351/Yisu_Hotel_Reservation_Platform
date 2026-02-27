@@ -12,36 +12,36 @@
     
     // 无图片状态
     .no-images {
-      height: 250px;
+      height: 500rpx;
       display: flex;
       align-items: center;
       justify-content: center;
       background-color: #f5f5f5;
-      margin-bottom: 16px;
+      margin-bottom: 32rpx;
       color: #999;
-      font-size: 14px;
+      font-size: 28rpx;
     }
 
     // 酒店信息区域
     .hotel-info-section {
       background-color: #fff;
-      margin: 12px 0;
-      padding: 16px;
+      margin: 24rpx 0;
+      padding: 32rpx;
       border-radius: 0;
   
       .hotel-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 12px;
+        margin-bottom: 40rpx;
   
         .hotel-title {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 16rpx;
   
           .name {
-            font-size: 20px;
+            font-size: 40rpx;
             font-weight: bold;
             color: #333;
           }
@@ -51,21 +51,21 @@
       .hotel-address {
         display: flex;
         align-items: center;
-        margin-bottom: 16px;
+        margin-bottom: 24rpx;
         background-color: #f5f5f5;
-        padding: 10px 12px;
+        padding: 16rpx 12rpx;
         border-radius: 8px;
   
         .address-icon {
-          font-size: 16px;
+          font-size: 24rpx;
           margin-right: 6px;
         }
   
         .address-text {
-          font-size: 14px;
+          font-size: 24rpx;   
           color: #666;
           flex: 1;
-          margin-right: 12px;
+          margin-right: 24rpx;
           line-height: 1.4;
         }
       }
@@ -73,28 +73,28 @@
       .hotel-tags {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 8px;
+        gap: 16rpx;
+        margin-bottom: 16rpx;
       }
     }
   
     // 房间列表标题
     .room-section-title {
       background-color: #fff;
-      padding: 16px;
-      margin-bottom: 1px;
+      padding: 36rpx;
+      margin-bottom: 4rpx;
       display: flex;
       justify-content: space-between;
       align-items: center;
   
       .title {
-        font-size: 18px;
+        font-size: 40rpx;
         font-weight: bold;
         color: #333;
       }
   
       .count {
-        font-size: 14px;
+        font-size: 28rpx;
         color: #999;
       }
     }
@@ -102,22 +102,22 @@
     // 房间列表
     .room-list {
       background-color: #fff;
-      padding: 0 16px;
+      padding: 0 32rpx;
   
       .room-item {
         display: flex;
-        padding: 16px 0;
-        border-bottom: 1px solid #eee;
+        padding: 32rpx 0;
+        border-bottom: 2rpx solid #eee;
   
         &:last-child {
           border-bottom: none;
         }
   
         .room-image {
-          width: 120px;
-          height: 120px;
-          border-radius: 8px;
-          margin-right: 12px;
+          width: 240rpx;
+          height: 240rpx;
+          border-radius: 16rpx;
+          margin-right: 24rpx;
           background-color: #f0f0f0;
         }
   
@@ -130,29 +130,29 @@
           .room-name {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-bottom: 8px;
+            gap: 16rpx;
+            margin-bottom: 16rpx;
   
             .name {
-              font-size: 16px;
+              font-size: 32rpx;
               font-weight: 500;
               color: #333;
             }
           }
   
           .room-desc {
-            font-size: 13px;
+            font-size: 32rpx;
             color: #666;
-            margin-bottom: 8px;
+            margin-bottom: 16rpx;
             display: flex;
-            gap: 16px;
+            gap: 32rpx;
           }
   
           .room-facilities {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 12px;
+            gap: 12rpx;
+            margin-bottom: 24rpx;
           }
   
           .room-footer {
@@ -162,17 +162,17 @@
   
             .price {
               .currency {
-                font-size: 14px;
+                font-size: 28rpx;
                 color: #FF6B3C;
                 font-weight: 500;
               }
               .value {
-                font-size: 22px;
+                font-size: 44rpx;
                 font-weight: bold;
                 color: #FF6B3C;
               }
               .unit {
-                font-size: 12px;
+                font-size: 24rpx;
                 color: #999;
               }
             }
@@ -183,19 +183,22 @@
   
     // 加载更多状态
     .loading-more {
-      padding: 20px;
+      padding: 40rpx;
       text-align: center;
       color: #999;
-      font-size: 14px;
+      font-size: 28rpx;
       background-color: #fff;
     }
   
     // 没有更多数据
     .no-more {
-      padding: 20px;
+      padding: 40rpx;
       text-align: center;
       color: #ccc;
-      font-size: 14px;
+      font-size: 28rpx;
       background-color: #fff;
     }
   }
+  .hotel-detail {
+  padding-bottom: env(safe-area-inset-bottom);
+}

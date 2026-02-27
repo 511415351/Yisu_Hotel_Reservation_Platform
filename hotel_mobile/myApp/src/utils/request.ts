@@ -1,6 +1,8 @@
 import Taro from "@tarojs/taro";
 
-const BASE_URL = import.meta.env.TARO_APP_API_URL || "http://localhost:3000";
+//const BASE_URL = import.meta.env.TARO_APP_API_URL || "http://localhost:3000";
+const BASE_URL =  "https://m1.apifoxmock.com/m1/7810839-7557920-default";
+
 const TIMEOUT = 10000;
 
 console.log("当前环境:", process.env.NODE_ENV);
