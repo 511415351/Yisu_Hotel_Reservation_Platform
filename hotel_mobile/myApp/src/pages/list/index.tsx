@@ -6,6 +6,7 @@ import  api  from '../../api/index'
 import { HotelListParams } from '../../types/api' 
 import './index.scss'
 import {useRouter} from '@tarojs/taro'
+import ListMenu from './Menu'
 
 export default function HotelList() {
     const router = useRouter()
@@ -25,31 +26,39 @@ export default function HotelList() {
         hasBreakfast: false,
         hasParking: false,
     })
-    
+    const [pageNo, setPageNo] = useState(1)
+    const [hasMore, setHasMore] = useState(true)
+    const [pageSize, setPageSize] = useState(5)
     // 下拉选择器状态
     const [showStarPicker, setShowStarPicker] = useState(false)
     const [showPricePicker, setShowPricePicker] = useState(false)
     const [starText, setStarText] = useState('不限')
     const [priceText, setPriceText] = useState('不限')
     
-    // 星级选项
-    const starOptions = [
-        { value: 0, text: '不限' },
-        { value: 1, text: '1星' },
-        { value: 2, text: '2星' },
-        { value: 3, text: '3星' },
-        { value: 4, text: '4星' },
-        { value: 5, text: '5星' }
-    ]
+    // // 星级选项
+    // const starOptions = [
+    //     { value: 0, text: '不限星级' },
+    //     { value: 1, text: '1星' },
+    //     { value: 2, text: '2星' },
+    //     { value: 3, text: '3星' },
+    //     { value: 4, text: '4星' },
+    //     { value: 5, text: '5星' }
+    // ]
     
-    // 价格范围选项
-    const priceOptions = [
-        { value: '', text: '不限' },
-        { value: '0-200', text: '200元以下' },
-        { value: '201-500', text: '201-500元' },
-        { value: '501-800', text: '501-800元' },
-        { value: '801+', text: '800元以上' }
-    ]
+    // // 价格范围选项
+    // const priceOptions = [
+    //     { value: '', text: '不限价格' },
+    //     { value: '0-200', text: '200元以下' },
+    //     { value: '201-500', text: '201-500元' },
+    //     { value: '501-800', text: '501-800元' },
+    //     { value: '801+', text: '800元以上' }
+    // ]
+    const [scrollHeight, setScrollHeight] = useState(0);
+    useEffect(() => {
+            const sysInfo = Taro.getSystemInfoSync();
+            const headerHeight = 100; // 顶部筛选栏高度 px
+            setScrollHeight(sysInfo.windowHeight - headerHeight);
+      }, []);
     useEffect(() => {
         if (router.params) {
             const params = { ...searchParams }
@@ -96,34 +105,18 @@ export default function HotelList() {
             })
             setSearchParams(params)
             
-            // 初始化下拉选择器的显示文本
-            if (params.star) {
-                const starOption = starOptions.find(opt => opt.value === params.star)
-                if (starOption) setStarText(starOption.text)
-            }
-            if (params.priceRange) {
-                const priceOption = priceOptions.find(opt => opt.value === params.priceRange)
-                if (priceOption) setPriceText(priceOption.text)
-            }
+            // // 初始化下拉选择器的显示文本
+            // if (params.star) {
+            //     const starOption = starOptions.find(opt => opt.value === params.star)
+            //     if (starOption) setStarText(starOption.text)
+            // }
+            // if (params.priceRange) {
+            //     const priceOption = priceOptions.find(opt => opt.value === params.priceRange)
+            //     if (priceOption) setPriceText(priceOption.text)
+            // }
         }
     }, [router.params])
-    // // 从路由参数中解析筛选条件
-    // const setSearchParams = {
-    //     city: params.city ? decodeURIComponent(params.city) : '',
-    //     hotelName: params.hotelName ? decodeURIComponent(params.hotelName) : '',
-    //     checkInDate: params.checkInDate || '',
-    //     checkInTime: params.checkInTime || '',
-    //     checkOutDate: params.checkOutDate || '',
-    //     checkOutTime: params.checkOutTime || '',
-    //     roomNum: params.roomNum ? parseInt(params.roomNum) : 1,
-    //     adultNum: params.adultNum ? parseInt(params.adultNum) : 1,
-    //     childNum: params.childNum ? parseInt(params.childNum) : 0,
-    //     star: params.star ? parseInt(params.star) : 0,
-    //     priceRange: params.priceRange ? decodeURIComponent(params.priceRange) : '',
-    //     nearby: params.nearby? decodeURIComponent(params.nearby) : '',
-    //     hasBreakfast: params.hasBreakfast ? parseBoolean(params.hasBreakfast) : false,
-    //     hasParking: params.hasParking ? parseBoolean(params.hasParking) : false,
-    // }
+
    
     console.log('从首页传递的筛选条件:', searchParams)
     // 当筛选参数变化时重新请求
@@ -148,8 +141,8 @@ export default function HotelList() {
         try {
             // 构建 API 请求参数，包含筛选条件
             const apiParams: any = {
-                pageNo: 1,
-                pageSize: 5,
+                pageNo: pageNo,
+                pageSize: pageSize,
             }
             
             // 添加筛选条件（如果有值）
@@ -160,7 +153,7 @@ export default function HotelList() {
                 apiParams.keyword = searchParams.hotelName
             }
             if (searchParams.checkInDate&&searchParams.checkOutDate) {
-                apiParams.date = searchParams.checkInDate+'/'+searchParams.checkOutDate
+                apiParams.date = searchParams.checkInDate+'~'+searchParams.checkOutDate
             }
             
             if(searchParams.star) {
@@ -181,8 +174,9 @@ export default function HotelList() {
             console.log('API 请求参数:', apiParams)
             let data = await api.getHotelList(apiParams);
             console.log('酒店列表数据:', data);
-            data = data.filter((item: any) => item.address.includes(searchParams.city));
             setHotelList(data)
+            setHasMore(data.length >= pageSize)
+            
         } catch (error) {
             console.error('获取酒店列表失败:', error);
         } finally {
@@ -192,31 +186,31 @@ export default function HotelList() {
     }
     // 酒店每一个列表项中的信息维度(酒店名/评分/地址/价格等)如有更好的用户体验可以自行定义
      // 处理星级选择确认
-    const handleStarConfirm = (options: any) => {
-        const selected = options[0]
-        const starValue = selected.value === 0 ? 0 : selected.value
-        setStarText(selected.text)
-        setSearchParams(prev => ({ ...prev, star: starValue }))
-        setShowStarPicker(false)
-    }
+    // const handleStarConfirm = (options: any) => {
+    //     const selected = options[0]
+    //     const starValue = selected.value === 0 ? 0 : selected.value
+    //     setStarText(selected.text)
+    //     setSearchParams(prev => ({ ...prev, star: starValue }))
+    //     setShowStarPicker(false)
+    // }
     
-    // 处理价格选择确认
-    const handlePriceConfirm = (options: any) => {
-        const selected = options[0]
-        setPriceText(selected.text)
-        setSearchParams(prev => ({ ...prev, priceRange: selected.value }))
-        setShowPricePicker(false)
-    }
+    // // 处理价格选择确认
+    // const handlePriceConfirm = (options: any) => {
+    //     const selected = options[0]
+    //     setPriceText(selected.text)
+    //     setSearchParams(prev => ({ ...prev, priceRange: selected.value }))
+    //     setShowPricePicker(false)
+    // }
     
     // 处理快捷筛选标签点击
     const handleQuickFilter = (type: string, value: any) => {
         setSearchParams(prev => {
             const newParams = { ...prev }
             switch (type) {
-                case 'priceRange':
-                    newParams.priceRange = newParams.priceRange === value ? '' : value
-                    setPriceText(newParams.priceRange ? priceOptions.find(opt => opt.value === newParams.priceRange)?.text || '不限' : '不限')
-                    break
+                // case 'priceRange':
+                //     newParams.priceRange = newParams.priceRange === value ? '' : value
+                //     setPriceText(newParams.priceRange ? priceOptions.find(opt => opt.value === newParams.priceRange)?.text || '不限' : '不限')
+                //     break
                 case 'hasBreakfast':
                     newParams.hasBreakfast = !newParams.hasBreakfast
                     break
@@ -230,7 +224,57 @@ export default function HotelList() {
             return newParams
         })
     }
-    
+    const handleLoadMore = async () => {
+        if(loading || !hasMore) return
+        try {
+            setLoading(true)
+            if(!hasMore) return
+            setPageNo(pageNo + 1)
+            // 添加筛选条件（如果有值）
+             // 构建 API 请求参数，包含筛选条件
+            const apiParams: any = {
+                pageNo: pageNo,
+                pageSize: pageSize,
+            }
+            
+            // 添加筛选条件（如果有值）
+            if (searchParams.city) {
+                apiParams.location = searchParams.city
+            }
+            if (searchParams.hotelName) {
+                apiParams.keyword = searchParams.hotelName
+            }
+            if (searchParams.checkInDate&&searchParams.checkOutDate) {
+                apiParams.date = searchParams.checkInDate+'~'+searchParams.checkOutDate
+            }
+            
+            if(searchParams.star) {
+                apiParams.stars = searchParams.star
+            }
+            if(searchParams.priceRange) {
+                apiParams.priceRange = searchParams.priceRange
+            }
+            if(searchParams.nearby) {
+                apiParams.nearby = searchParams.nearby
+            }
+            if(searchParams.hasBreakfast) {
+                apiParams.hasBreakfast = searchParams.hasBreakfast
+            }
+            if(searchParams.hasParking) {
+                apiParams.hasParking = searchParams.hasParking
+            }
+            console.log('API 请求参数:', apiParams)
+            let data = await api.getHotelList(apiParams);
+            console.log('酒店列表数据:', data);
+            setHotelList(prev => [...prev, ...data])
+            setHasMore(data.length >= pageSize)
+        }catch(error){
+            console.error('加载更多酒店列表失败:', error);
+        }finally{
+            setLoading(false)
+        }
+    }
+   
     // 跳转到搜索页修改条件
   const goToSearch = () => {
     // 把当前参数传回首页，让首页回填
@@ -251,12 +295,7 @@ export default function HotelList() {
     })
   }
 
-//   // 跳转到详情页
-//   const goToDetail = (hotelId) => {
-//     Taro.navigateTo({
-//       url: `/pages/detail/index?hotelId=${hotelId}`
-//     })
-//   }
+
 
   // 格式化显示筛选条件
   const formatParams = () => {
@@ -285,6 +324,7 @@ export default function HotelList() {
     return (
         <View className='hotel-list-page'>
         {/* 顶部筛选条件条 */}
+        <View className='filter'>
         <View className='filter-bar' onClick={goToSearch}>
           <View className='filter-content'>
             <Text className='filter-icon'>🔍</Text>
@@ -293,7 +333,19 @@ export default function HotelList() {
           <Button size='small' type='primary' className='filter-btn'>修改</Button>
         </View>
   
-        {/* 筛选选项栏 */}
+        {/**筛选条件菜单 */}
+        {/* 只有当searchParams.city存在时才渲染ListMenu，确保拿到路由参数 */}
+        {searchParams.city && (
+          <ListMenu
+            initialValues={{
+              address: searchParams.city,
+              stars: searchParams.star,
+              priceRange: searchParams.priceRange
+            }}
+            onChange={(data)=>setSearchParams({...searchParams,star:data.stars,priceRange:data.priceRange,city:data.address})}
+          />
+        )}
+        {/* 筛选选项栏 
         <View className='filter-options-bar'>
           <View className='filter-option'>
             <Text className='filter-option-label'>星级:</Text>
@@ -313,9 +365,10 @@ export default function HotelList() {
               {priceText} ▼
             </View>
           </View>
-        </View>
+        </View>*/}
         
-        {/* 星级选择器 */}
+       
+    {/*  星级选择器 
         <Picker
           visible={showStarPicker}
           options={starOptions}
@@ -324,7 +377,7 @@ export default function HotelList() {
           onConfirm={handleStarConfirm}
         />
         
-        {/* 价格选择器 */}
+        价格选择器 
         <Picker
           visible={showPricePicker}
           options={priceOptions}
@@ -332,6 +385,7 @@ export default function HotelList() {
           onClose={() => setShowPricePicker(false)}
           onConfirm={handlePriceConfirm}
         />
+        */}
   
         {/* 快捷筛选标签 */}
         <View className='quick-filters'>
@@ -357,12 +411,15 @@ export default function HotelList() {
             <Text className='count'>共 {hotelList.length} 家酒店</Text>
             <Text className='sort'>默认排序 ▼</Text>
         </View>
+        </View>
             <ScrollView 
                 scrollY 
                 className='list-wrapper' 
-                style={{ height: 'calc(100vh - 200px)' }}
+                style={{ height: scrollHeight }}
                 enhanced
                 showScrollbar={false}
+                lowerThreshold={50}
+                onScrollToLower={handleLoadMore}
             >
                 {hotelList.length > 0 ? (
                     hotelList.map((item) => (
@@ -406,6 +463,19 @@ export default function HotelList() {
                     // 加载中或无数据的处理
                     !loading ? <View className='empty'>暂无数据</View> : <View>加载中...</View>
                 )}
+                 {/* 加载更多状态 */}
+                    {loading && (
+                        <View className='loading-more'>
+                            <Text>正在为您寻找更多酒店...</Text>
+                        </View>
+                    )}
+        
+                    {/* 没有更多数据 */}
+                    {!hasMore && (
+                        <View className='no-more'>
+                            <Text>—— 没有更多酒店了 ——</Text>
+                        </View>
+                    )}
             </ScrollView>
         </View>
     );
