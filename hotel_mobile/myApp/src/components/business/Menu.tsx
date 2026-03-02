@@ -40,7 +40,7 @@ const listMenu = ({ onChange, initialValues }: ListMenuProps) => {
     { text: '0-200', value: '0-200' },
     { text: '201-500', value: '201-500' },
     { text: '501-800', value: '501-800' },
-    { text: '800+', value: '800+' }
+    { text: '801+', value: '801+' }
   ])
 
   const [address] = useState([

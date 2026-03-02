@@ -5,6 +5,7 @@ import { Swiper, SwiperItem, Cell, Button, Divider, Rate, Tag, Empty, Space } fr
 import './index.scss'
 import { HotelParams,RoomParams} from '../../types/api'
 import  api  from '../../api/index' 
+import {CalendarCon} from '../../components'
 export default function Index() {
     const router = useRouter()
     const params = router.params || {}
@@ -31,7 +32,13 @@ export default function Index() {
     useEffect(() => {
         fetchHotelDetail()
     }, [hotelId])
-    
+
+     const getInitialDate = (paramName:string)=>{
+        if(router.params[paramName]){
+            return decodeURIComponent(router.params[paramName])
+        }
+        return ''
+    }
     const [rooms, setRooms] = useState<RoomParams[]>([])
 
     const [hasMore, setHasMore] = useState(true)
@@ -39,6 +46,11 @@ export default function Index() {
     const [currentPage, setCurrentPage] = useState(1)
     const [pageSize, setPageSize] = useState(2)
     const [refreshing, setRefreshing] = useState(false)
+    const [checkInDate, setCheckInDate] = useState(getInitialDate('checkInDate'))
+    const [checkOutDate, setCheckOutDate] = useState(getInitialDate('checkOutDate'))
+    const [calendarVisible, setCalendarVisible] = useState(false)
+    
+   
  // 获取酒店详情
     const fetchHotelDetail = async () => {
         if (!hotelId) return
@@ -278,6 +290,18 @@ export default function Index() {
                             拨打
                         </Button>
                     }
+                />
+            </View>
+            <View className='select-data'>
+                   {/* 日期选择 */}
+                <CalendarCon
+                value={{ checkInDate: checkInDate, checkOutDate: checkOutDate }}
+                visible={calendarVisible}
+                onValueChange={(value)=>{
+                    setCheckInDate(value.checkInDate)
+                    setCheckOutDate(value.checkOutDate)
+                }}
+                onVisibleChange={setCalendarVisible}
                 />
             </View>
 

@@ -2,11 +2,10 @@ import { useState, useRef, useMemo, useCallback, memo, useEffect } from 'react'
 import Taro from '@tarojs/taro';
 import { View, Text} from '@tarojs/components'
 import { Button as NutButton, Input, Cascader, Cell, Picker } from '@nutui/nutui-react-taro'
-import CalenderCon from './Calendar'
-import RoomNumber from './RoomNumber'
+import { CalendarCon, RoomNumber } from '../../components'
 import './index.scss'
 import { Image } from '@tarojs/components'
-import AdBanner from './AdBanner';
+import AdBanner from '../../components/business/AdBanner';
 import promoImage from '../../assets/images/ad/1.png';
 import { useRouter } from '@tarojs/taro'
 
@@ -66,7 +65,7 @@ const PricePicker = memo(({ visible, onConfirm, onClose, currentValue = 0 }: Pic
     { text: '800元以上', value: '801+' }
   ]
   
-  const handleConfirm = useCallback((options: any[]) => {
+    const handleConfirm = useCallback((options: any[]) => {
     const selected = options[0]
     const selectedIndex = priceOptions.findIndex(p => p.value === selected.value)
     onConfirm([{ value: selected.value, text: selected.text, index: selectedIndex }])
@@ -114,6 +113,15 @@ const FilterButtons = memo(({
     >🅿️ 含停车</NutButton>
   </View>
 ))
+const padZero = (num: number | string, targetLength = 2) => {
+  let str = `${num}`
+  while (str.length < targetLength) {
+    str = `0${str}`
+  }
+  return str
+}
+
+ 
 
 // 提取城市选择器组件
 const CitySelector = memo(({ value5, setIsVisibleDemo5 }: { value5: string[]; setIsVisibleDemo5: (value: boolean) => void }) => (
@@ -125,15 +133,31 @@ const CitySelector = memo(({ value5, setIsVisibleDemo5 }: { value5: string[]; se
 ))
 
 const Index = () => {
+    
+  // 将默认日期逻辑放在父组件
+    const getDefaultDates = () => {
+    const today = new Date()
+    const tomorrow = new Date(today)
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    const formatDate = (date: Date) => {
+      const year = date.getFullYear()
+      const month = padZero(date.getMonth() + 1)
+      const day = padZero(date.getDate())
+      return `${year}-${month}-${day}`
+    }
+    return [formatDate(today), formatDate(tomorrow)]
+  }
+
+  const [dateTimeData, setDateTimeData] = useState<{ checkInDate: string; checkOutDate: string }>({
+    checkInDate: getDefaultDates()[0],
+    checkOutDate: getDefaultDates()[1]
+  })
+  const [calendarVisible, setCalendarVisible] = useState(false)
+
     const router = useRouter()
     const [isVisibleDemo5, setIsVisibleDemo5] = useState(false)
     const [value5, setValue5] = useState<string[]>([])
-    const [dateTimeData, setDateTimeData] = useState<{
-        checkInDate: string;
-        checkInTime: string;
-        checkOutDate: string;
-        checkOutTime: string;
-    } | null>(null)
+   
     const [roomData, setRoomData] = useState<{ roomNum: number; adultNum: number; childNum: number }>({ roomNum: 1, adultNum: 1, childNum: 0 })
     const hotelNameRef = useRef<string>('')
     
@@ -192,9 +216,7 @@ const Index = () => {
             if (params.checkInDate && params.checkOutDate) {
                 setDateTimeData({
                     checkInDate: params.checkInDate,
-                    checkInTime: params.checkInTime || '',
                     checkOutDate: params.checkOutDate,
-                    checkOutTime: params.checkOutTime || ''
                 })
             }
             
@@ -216,7 +238,7 @@ const Index = () => {
             setValue5([])
         }
     }, [router.params])
-    
+  
     // 使用 useMemo 缓存静态数据
     const starOptions = useMemo(() => [
         { value: 0, text: '不限' },
@@ -295,9 +317,7 @@ const Index = () => {
         if (hotelName) params.hotelName = encodeURIComponent(hotelName);
         if (dateTimeData) {
             params.checkInDate = dateTimeData.checkInDate;
-            params.checkInTime = dateTimeData.checkInTime;
             params.checkOutDate = dateTimeData.checkOutDate;
-            params.checkOutTime = dateTimeData.checkOutTime;
         }
 
         if (filters.star) params.star = filters.star.toString();
@@ -348,7 +368,12 @@ const Index = () => {
                 )}
                 
                 {/* 日期选择 */}
-                <CalenderCon onChange={(data) => setDateTimeData(data)} /> 
+                <CalendarCon
+                value={dateTimeData}
+                visible={calendarVisible}
+                onValueChange={setDateTimeData}
+                onVisibleChange={setCalendarVisible}
+                />
                 
                 {/* 房间人数选择 */}
                 <RoomNumber onChange={(data) => setRoomData(data)} />

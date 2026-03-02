@@ -7,6 +7,7 @@ export interface HotelListParams {
     lowestPrice: string;
     address: string;
     imageUrl: string;
+    hasMore:boolean;
 }
 
 export interface HotelParams {
@@ -23,6 +24,7 @@ export interface HotelParams {
     score: number;
     hasBreakfast: boolean;
     hasParking: boolean;
+   
 
 }
 export interface RoomParams {
