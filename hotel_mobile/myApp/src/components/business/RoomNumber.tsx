@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View } from '@tarojs/components';
-import { InputNumber, Cell, Popup, Button } from '@nutui/nutui-react-taro';
+import { InputNumber, Cell, Popup, Button , ConfigProvider} from '@nutui/nutui-react-taro';
 
 interface RoomNumberProps {
   onChange?: (data: {
@@ -9,6 +9,13 @@ interface RoomNumberProps {
     childNum: number;
   }) => void;
 }
+const customTheme = {
+    nutuiInputnumberButtonWidth: '24px',
+    nutuiInputnumberButtonHeight: '24px',
+    nutuiInputnumberButtonBackgroundColor: `#f4f4f4`,
+    nutuiInputnumberInputBackgroundColor: '#fff',
+    nutuiInputnumberInputMargin: '0 2px',
+  }
 
 const RoomNumber: React.FC<RoomNumberProps> = ({ onChange }) => {
     const [visible, setVisible] = useState(false);
@@ -68,29 +75,34 @@ const RoomNumber: React.FC<RoomNumberProps> = ({ onChange }) => {
           <View>
             <View style={{ marginBottom: '20px' }}>
               <View style={{ marginBottom: '8px', fontSize: '14px' }}>房间数量</View>
+              <ConfigProvider theme={customTheme}>
               <InputNumber 
                 value={tempValues.roomNum}
-                onChange={(val) => updateItemValue('roomNum', Number(val))} 
-                //size="large"
+                onChange={(val) => updateItemValue('roomNum', Number(val))}
               />
+              </ConfigProvider>
             </View>
 
             <View style={{ marginBottom: '20px' }}>
               <View style={{ marginBottom: '8px', fontSize: '14px' }}>成人数量</View>
+             <ConfigProvider theme={customTheme}>
               <InputNumber 
                 value={tempValues.adultNum}
-                onChange={(val) => updateItemValue('adultNum', Number(val))} 
-                //size="large"
+                onChange={(val) => updateItemValue('adultNum', Number(val))}
               />
+              </ConfigProvider>
             </View>
 
             <View style={{ marginBottom: '20px' }}>
               <View style={{ marginBottom: '8px', fontSize: '14px' }}>儿童数量</View>
+              <ConfigProvider theme={customTheme}>
               <InputNumber 
+                defaultValue={0}
                 value={tempValues.childNum}
+                min={0}
                 onChange={(val) => updateItemValue('childNum', Number(val))} 
-                //size="large"
               />
+              </ConfigProvider>
             </View>
 
             {/* 3. 关闭按钮 */}

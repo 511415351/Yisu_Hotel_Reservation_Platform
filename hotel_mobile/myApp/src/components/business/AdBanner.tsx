@@ -1,7 +1,7 @@
 import Taro from '@tarojs/taro'
 import { View, ScrollView, Image, Text } from '@tarojs/components'
 import { HotelListParams, HotelParams } from 'src/types/api'
-
+import './AdBanner.scss'
 const defaultHotelImages: HotelListParams[] = [
   {
     _id: '1',
@@ -23,7 +23,7 @@ const defaultHotelImages: HotelListParams[] = [
   },
 ]
 
-import { Swiper } from '@nutui/nutui-react-taro'
+import { Swiper} from '@nutui/nutui-react-taro'
 import {
   CommonEventFunction,
   SwiperProps as TaroSwiperProps,
@@ -40,6 +40,7 @@ const AdBanner = () => {
     console.log('当前 index:', e.detail.current)
     }
   return (
+    <View className='ad-banner-root'>
     <Swiper
       className='ad-banner-swiper'
       defaultValue={0}
@@ -48,16 +49,17 @@ const AdBanner = () => {
       onChange={onChange}
     >
       {defaultHotelImages.map((hotel: HotelListParams, index) => (
-        <Swiper.Item key={hotel._id}>
+        <Swiper.Item className='ad-banner-swiper-item' key={hotel._id}>
         <Image
+            className='ad-image'
             mode="aspectFill"
-            style={{ width: '100%', height: '100%' }}
             onClick={() => handleHotelClick(hotel)}
             src={hotel.imageUrl}
         />
         </Swiper.Item>
       ))}
     </Swiper>
+    </View>
   )
 }
 export default AdBanner
