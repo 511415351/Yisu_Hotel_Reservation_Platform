@@ -7,7 +7,7 @@ export interface HotelListParams {
     lowestPrice: string;
     address: string;
     imageUrl: string;
-    hasMore:boolean;
+
 }
 
 export interface HotelParams {
