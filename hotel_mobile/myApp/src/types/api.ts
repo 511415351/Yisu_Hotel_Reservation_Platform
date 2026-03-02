@@ -28,12 +28,11 @@ export interface HotelParams {
 
 }
 export interface RoomParams {
-    id: string;
-    roomName: string;
-    roomPicture?: string;
-    roomPrice: string;
-    imageUrl: string;
-    number:string;
+    id: string
+    roomName: string
+    roomPicture?: string
+    roomPrice: string
+    number:string
     hasTV: boolean,
     hasWifi: boolean,
     hasWindow: boolean,
