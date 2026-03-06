@@ -1,5 +1,5 @@
 export default definePageConfig({
-  navigationBarTitleText: '首页',
+  navigationBarTitleText: '酒店列表',
   navigationBarBackgroundColor: '#fff',
   navigationBarTextStyle: 'black'
 })

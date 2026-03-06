@@ -4,11 +4,11 @@ import { View, Text} from '@tarojs/components'
 import { Button as NutButton, Input, Cascader, Cell, Picker } from '@nutui/nutui-react-taro'
 import { CalendarCon, RoomNumber } from '../../components'
 import './index.scss'
-import { Image } from '@tarojs/components'
 import AdBanner from '../../components/business/AdBanner';
-import promoImage from '../../assets/images/ad/1.png';
 import { useRouter } from '@tarojs/taro'
 
+
+// 提取快捷标签组件FilterButtons的Props类型
 interface FilterButtonsProps {
     nearby: string | null;
     hasBreakfast: boolean;
@@ -25,7 +25,40 @@ interface PickerProps {
   currentValue?: number;
 }
 
-// 星级选择器
+    //常量数据
+    const PRICE_OPTIONS = [
+        { value: '', text: '不限' },
+        { value: '0-200', text: '200元以下' },
+        { value: '201-500', text: '201-500元' },
+        { value: '501-800', text: '501-800元' },
+        { value: '801+', text: '800元以上' }
+    ]
+    const STAR_OPTIONS = [
+        { value: 0, text: '不限' },
+        { value: 1, text: '1星' },
+        { value: 2, text: '2星' },
+        { value: 3, text: '3星' },
+        { value: 4, text: '4星' },
+        { value: 5, text: '5星' }
+    ]
+    const OPTIONS_DEMO5 = [
+        { value: '北京', text: '北京', children: [
+            { value: '朝阳区', text: '朝阳区', children: [
+                { value: 'CBD', text: 'CBD' }
+            ]}
+        ]},
+        { value: '上海', text: '上海', children: [
+            { value: '浦东新区', text: '浦东新区', children: [
+                { value: '陆家嘴', text: '陆家嘴' }
+            ]}
+        ]},
+        { value: '广州', text: '广州', children: [
+            { value: '天河区', text: '天河区', children: [
+                { value: '珠江新城', text: '珠江新城' }
+            ]}
+        ]}
+    ]
+// 提取星级选择器组件
 const StarPicker = memo(({ visible, onConfirm, onClose, currentValue = 0 }: PickerProps) => {
   const starOptions = [
     { text: '不限', value: 0 },
@@ -55,7 +88,7 @@ const StarPicker = memo(({ visible, onConfirm, onClose, currentValue = 0 }: Pick
   )
 })
 
-// 价格选择器
+// 提取价格选择器组件
 const PricePicker = memo(({ visible, onConfirm, onClose, currentValue = 0 }: PickerProps) => {
   const priceOptions = [
     { text: '不限', value: '' },
@@ -84,7 +117,7 @@ const PricePicker = memo(({ visible, onConfirm, onClose, currentValue = 0 }: Pic
   )
 })
 
-// 提取子组件 - FilterButtons
+// 提取快捷标签组件 - FilterButtons
 const FilterButtons = memo(({ 
   nearby, 
   hasBreakfast, 
@@ -113,15 +146,6 @@ const FilterButtons = memo(({
     >🅿️ 含停车</NutButton>
   </View>
 ))
-const padZero = (num: number | string, targetLength = 2) => {
-  let str = `${num}`
-  while (str.length < targetLength) {
-    str = `0${str}`
-  }
-  return str
-}
-
- 
 
 // 提取城市选择器组件
 const CitySelector = memo(({ value5, setIsVisibleDemo5 }: { value5: string[]; setIsVisibleDemo5: (value: boolean) => void }) => (
@@ -132,32 +156,20 @@ const CitySelector = memo(({ value5, setIsVisibleDemo5 }: { value5: string[]; se
   />
 ))
 
-const Index = () => {
-    
-  // 将默认日期逻辑放在父组件
-    const getDefaultDates = () => {
-    const today = new Date()
-    const tomorrow = new Date(today)
-    tomorrow.setDate(tomorrow.getDate() + 1)
-    const formatDate = (date: Date) => {
-      const year = date.getFullYear()
-      const month = padZero(date.getMonth() + 1)
-      const day = padZero(date.getDate())
-      return `${year}-${month}-${day}`
-    }
-    return [formatDate(today), formatDate(tomorrow)]
+//设置默认日期的辅助函数——格式转化
+const padZero = (num: number | string, targetLength = 2) => {
+  let str = `${num}`
+  while (str.length < targetLength) {
+    str = `0${str}`
   }
+  return str
+}
 
-  const [dateTimeData, setDateTimeData] = useState<{ checkInDate: string; checkOutDate: string }>({
-    checkInDate: getDefaultDates()[0],
-    checkOutDate: getDefaultDates()[1]
-  })
-  const [calendarVisible, setCalendarVisible] = useState(false)
+const Index = () => {
 
     const router = useRouter()
     const [isVisibleDemo5, setIsVisibleDemo5] = useState(false)
     const [value5, setValue5] = useState<string[]>([])
-   
     const [roomData, setRoomData] = useState<{ roomNum: number; adultNum: number; childNum: number }>({ roomNum: 1, adultNum: 1, childNum: 0 })
     const hotelNameRef = useRef<string>('')
     
@@ -169,15 +181,81 @@ const Index = () => {
         hasBreakfast: false,
         hasParking: false,
         starText: '不限',
-        starIndex: 0,
-        priceIndex: 0
     })
 
     const [showStarPicker, setShowStarPicker] = useState(false)
     const [showPricePicker, setShowPricePicker] = useState(false)
 
-    // 处理从列表页返回时的参数
+     //获取默认日期
+    const getDefaultDates = () => {
+        const today = new Date()
+        const tomorrow = new Date(today)
+        tomorrow.setDate(tomorrow.getDate() + 1)
+        const formatDate = (date: Date) => {
+            const year = date.getFullYear()
+            const month = padZero(date.getMonth() + 1)
+            const day = padZero(date.getDate())
+            return `${year}-${month}-${day}`
+        }
+        return [formatDate(today), formatDate(tomorrow)]
+    }
+
+    const [dateTimeData, setDateTimeData] = useState<{ checkInDate: string; checkOutDate: string }>({
+        checkInDate: getDefaultDates()[0],
+        checkOutDate: getDefaultDates()[1]
+    })
+    const [calendarVisible, setCalendarVisible] = useState(false)
+
+    const STORAGE_KEY = 'hotel_search_params'
+
+    // 处理从列表页返回时的参数,更新当前页面参数
     useEffect(() => {
+        // 先尝试从 Storage 读取保存的筛选条件
+        const savedParams = Taro.getStorageSync(STORAGE_KEY)
+        console.log('从Storage读取筛选条件:', savedParams)
+        
+        // 如果有保存的筛选条件，优先使用
+        if (savedParams && Object.keys(savedParams).length > 0) {
+            // 处理城市选择
+            if (savedParams.city) {
+                setValue5([savedParams.city])
+            } else {
+                setValue5(['上海'])
+            }
+            
+            // 处理酒店名称
+            if (savedParams.hotelName) {
+                hotelNameRef.current = savedParams.hotelName
+            }
+            
+            // 处理日期数据
+            if (savedParams.checkInDate && savedParams.checkOutDate) {
+                setDateTimeData({
+                    checkInDate: savedParams.checkInDate,
+                    checkOutDate: savedParams.checkOutDate,
+                })
+            }
+            
+            // 处理筛选条件
+            setFilters(prev => ({
+                ...prev,
+                star: savedParams.star || null,
+                priceRange: savedParams.priceRange || '',
+                nearby: savedParams.nearby || '',
+                hasBreakfast: savedParams.hasBreakfast || false,
+                hasParking: savedParams.hasParking || false,
+                starText: savedParams.star ? `${savedParams.star}星` : '不限',
+                starIndex: savedParams.star ? savedParams.star : 0,
+                priceIndex: 0
+            }))
+            
+            // 清除 Storage，避免重复使用
+            Taro.removeStorageSync(STORAGE_KEY)
+            console.log('已清除Storage中的筛选条件')
+            return
+        }
+        
+        // 如果没有保存的筛选条件，处理 URL 参数
         if (router.params) {
             const params = router.params
             
@@ -239,41 +317,8 @@ const Index = () => {
         }
     }, [router.params])
   
-    // 使用 useMemo 缓存静态数据
-    const starOptions = useMemo(() => [
-        { value: 0, text: '不限' },
-        { value: 1, text: '1星' },
-        { value: 2, text: '2星' },
-        { value: 3, text: '3星' },
-        { value: 4, text: '4星' },
-        { value: 5, text: '5星' }
-    ], [])
-
-    const priceOptions = useMemo(() => [
-        { value: '', text: '不限' },
-        { value: '0-200', text: '200元以下' },
-        { value: '201-500', text: '201-500元' },
-        { value: '501-800', text: '501-800元' },
-        { value: '801+', text: '800元以上' }
-    ], [])
-
-    const optionsDemo5 = useMemo(() => [
-        { value: '北京', text: '北京', children: [
-            { value: '朝阳区', text: '朝阳区', children: [
-                { value: 'CBD', text: 'CBD' }
-            ]}
-        ]},
-        { value: '上海', text: '上海', children: [
-            { value: '浦东新区', text: '浦东新区', children: [
-                { value: '陆家嘴', text: '陆家嘴' }
-            ]}
-        ]},
-        { value: '广州', text: '广州', children: [
-            { value: '天河区', text: '天河区', children: [
-                { value: '珠江新城', text: '珠江新城' }
-            ]}
-        ]}
-    ], [])
+  
+    
 
     // 使用 useCallback 缓存函数
     const handleStarConfirm = useCallback((options: any) => {
@@ -354,103 +399,107 @@ const Index = () => {
                     setIsVisibleDemo5={setIsVisibleDemo5} 
                 />
                 
-                {/* 级联选择器 */}
-                {isVisibleDemo5 && (
-                    <Cascader
-                        visible={isVisibleDemo5}
-                        value={value5}
-                        title="选择城市"
-                        options={optionsDemo5}
-                        closeable
-                        onClose={() => setIsVisibleDemo5(false)}
-                        onChange={change5}
+            {/* 级联选择器 */}
+            {isVisibleDemo5 && (
+                <Cascader
+                    visible={isVisibleDemo5}
+                    value={value5}
+                    title="选择城市"
+                    options={OPTIONS_DEMO5}
+                    closeable
+                    onClose={() => setIsVisibleDemo5(false)}
+                    onChange={change5}
+                />
+            )}
+                
+            {/* 日期选择 */}
+            <CalendarCon
+            value={dateTimeData}
+            visible={calendarVisible}
+            onValueChange={setDateTimeData}
+            onVisibleChange={setCalendarVisible}
+            />
+                
+            {/* 房间人数选择 */}
+            <RoomNumber onChange={(data) => setRoomData(data)} />
+            {/**星级选择和价格选择 */}
+            <View className="filter-row">
+                {/* 星级选择 - 下拉 */}
+                <View className="filter-item">
+                <Text className="filter-label">星级</Text>
+                <View 
+                    className="filter-select"
+                    onClick={() => setShowStarPicker(true)}
+                >
+                    <Text>{filters.starText}</Text>
+                    <Text className="arrow">▼</Text>
+                </View>
+                {showStarPicker && (
+                    <StarPicker
+                    visible={showStarPicker}
+                    onConfirm={handleStarConfirm}
+                    onClose={() => setShowStarPicker(false)}
+                    currentValue={STAR_OPTIONS.findIndex(s => s.value === filters.star) >= 0
+                        ? STAR_OPTIONS.findIndex(s => s.value === filters.star)
+                        : 0}
                     />
                 )}
-                
-                {/* 日期选择 */}
-                <CalendarCon
-                value={dateTimeData}
-                visible={calendarVisible}
-                onValueChange={setDateTimeData}
-                onVisibleChange={setCalendarVisible}
+                </View>
+
+                {/* 价格选择 - 下拉 */}
+                <View className="filter-item">
+                <Text className="filter-label">价格</Text>
+                <View 
+                    className="filter-select"
+                    onClick={() => setShowPricePicker(true)}
+                >
+                    <Text>
+                    {filters.priceRange 
+                        ? PRICE_OPTIONS.find(p => p.value === filters.priceRange)?.text || '不限' 
+                        : '不限'}
+                    </Text>
+                    <Text className="arrow">▼</Text>
+                </View>
+                {showPricePicker && (
+                    <PricePicker
+                    visible={showPricePicker}
+                    onConfirm={handlePriceConfirm}
+                    onClose={() => setShowPricePicker(false)}
+                    currentValue={PRICE_OPTIONS.findIndex(p => p.value === filters.priceRange) >= 0
+                        ? PRICE_OPTIONS.findIndex(p => p.value === filters.priceRange)
+                        : 0}
+                    />
+                )}
+                </View>
+            </View>
+
+            {/* 关键词选择 - 使用提取的 FilterButtons 组件 */}
+            <View className="filter-section">
+                <Text className="filter-label">筛选条件:</Text>
+                <FilterButtons
+                    nearby={filters.nearby}
+                    hasBreakfast={filters.hasBreakfast}
+                    hasParking={filters.hasParking}
+                    setNearby={(value) => updateFilter('nearby', value)}
+                    setHasBreakfast={(value) => updateFilter('hasBreakfast', value)}
+                    setHasParking={(value) => updateFilter('hasParking', value)}
                 />
-                
-                {/* 房间人数选择 */}
-                <RoomNumber onChange={(data) => setRoomData(data)} />
+            </View>
 
-                <View className="filter-row">
-                   {/* 星级选择 - 下拉 */}
-                    <View className="filter-item">
-                    <Text className="filter-label">星级</Text>
-                    <View 
-                        className="filter-select"
-                        onClick={() => setShowStarPicker(true)}
-                    >
-                        <Text>{filters.starText}</Text>
-                        <Text className="arrow">▼</Text>
-                    </View>
-                    {showStarPicker && (
-                        <StarPicker
-                        visible={showStarPicker}
-                        onConfirm={handleStarConfirm}
-                        onClose={() => setShowStarPicker(false)}
-                        currentValue={filters.starIndex}
-                        />
-                    )}
-                    </View>
+            {/* 酒店名称输入 */}
+            <View className="form-section">
+                <Input
+                    className="hotel-name-input"
+                    placeholder="请输入酒店名称/关键字"
+                    type="text"
+                    onChange={(value) => { hotelNameRef.current = value as string }}
+                />
+            </View>
 
-                    {/* 价格选择 - 下拉 */}
-                    <View className="filter-item">
-                    <Text className="filter-label">价格</Text>
-                    <View 
-                        className="filter-select"
-                        onClick={() => setShowPricePicker(true)}
-                    >
-                        <Text>
-                        {filters.priceRange 
-                            ? priceOptions.find(p => p.value === filters.priceRange)?.text || '不限' 
-                            : '不限'}
-                        </Text>
-                        <Text className="arrow">▼</Text>
-                    </View>
-                    {showPricePicker && (
-                        <PricePicker
-                        visible={showPricePicker}
-                        onConfirm={handlePriceConfirm}
-                        onClose={() => setShowPricePicker(false)}
-                        currentValue={filters.priceIndex}
-                        />
-                    )}
-                    </View>
-                </View>
-
-                {/* 关键词选择 - 使用提取的 FilterButtons 组件 */}
-                <View className="filter-section">
-                    <Text className="filter-label">筛选条件:</Text>
-                    <FilterButtons
-                        nearby={filters.nearby}
-                        hasBreakfast={filters.hasBreakfast}
-                        hasParking={filters.hasParking}
-                        setNearby={(value) => updateFilter('nearby', value)}
-                        setHasBreakfast={(value) => updateFilter('hasBreakfast', value)}
-                        setHasParking={(value) => updateFilter('hasParking', value)}
-                    />
-                </View>
-
-                {/* 酒店名称输入 */}
-                <View className="form-section">
-                    <Input
-                        className="hotel-name-input"
-                        placeholder="请输入酒店名称/关键字"
-                        type="text"
-                        onChange={(value) => { hotelNameRef.current = value as string }}
-                    />
-                </View>
-
-                {/* 查询按钮 */}
-                <View className="search-btn">
-                    <button className="search-btn" onClick={handleSearch}>查询酒店</button>
-                </View>
+            {/* 查询按钮 */}
+            <View className="search-btn">
+                <button className="search-btn" onClick={handleSearch}>查询酒店</button>
+            </View>
             </View>
 
         </View>
@@ -459,16 +508,3 @@ const Index = () => {
 
 // 使用 memo 包装整个组件
 export default memo(Index)
-//
-            // {/* 限时特惠广告 */}
-            // <View className="promo" onClick={() => {
-            //     Taro.navigateTo({
-            //         url: '/pages/promotion/index'
-            //     })
-            // }}>
-            //     <Image className="promo-img" src={promoImage} mode="aspectFill"/>
-            //     <View className="promo-text">
-            //         <Text className="promo-title">限时特惠</Text>
-            //         <Text className="promo-subtitle">精选酒店低至5折</Text>
-            //     </View>
-            // </View>

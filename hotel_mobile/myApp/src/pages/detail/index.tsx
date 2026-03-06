@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState,useCallback } from 'react'
 import Taro, { useRouter } from '@tarojs/taro'
 import { View, Image, ScrollView, Text } from '@tarojs/components'
-import { Swiper, SwiperItem, Cell, Button, Divider, Rate, Tag, Empty, Space } from '@nutui/nutui-react-taro'
+import { Swiper, SwiperItem, Cell, Button, Divider, Rate, Tag, Space } from '@nutui/nutui-react-taro'
 import './index.scss'
 import { HotelParams,RoomParams} from '../../types/api'
 import  api  from '../../api/index' 
 import {CalendarCon} from '../../components'
+
+
 export default function Index() {
     const router = useRouter()
     const params = router.params || {}
     const hotelId = params.hotelId?decodeURIComponent(params.hotelId):''
     console.log(`酒店ID:${hotelId}`)
-
-
     // 酒店详情数据
     const [hotelDetail, setHotelDetail] = useState<HotelParams>({
         hotelId: '',
@@ -29,37 +29,35 @@ export default function Index() {
         hotelRooms: [],
         imageUrl: []
     })
-    useEffect(() => {
-        fetchHotelDetail()
-    }, [hotelId])
 
-     const getInitialDate = (paramName:string)=>{
-        if(router.params[paramName]){
-            return decodeURIComponent(router.params[paramName])
-        }
-        return ''
-    }
     const [rooms, setRooms] = useState<RoomParams[]>([])
-
     const [hasMore, setHasMore] = useState(true)
     const [loading, setLoading] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [pageSize, setPageSize] = useState(2)
     const [refreshing, setRefreshing] = useState(false)
+    const [calendarVisible, setCalendarVisible] = useState(false)
+
+    //获取路由中的酒店日期参数
+    const getInitialDate = (paramName:string)=>{
+        if(router.params[paramName]){
+            return decodeURIComponent(router.params[paramName])
+        }
+        return ''
+    }
     const [checkInDate, setCheckInDate] = useState(getInitialDate('checkInDate'))
     const [checkOutDate, setCheckOutDate] = useState(getInitialDate('checkOutDate'))
-    const [calendarVisible, setCalendarVisible] = useState(false)
-    
-   
- // 获取酒店详情
-    const fetchHotelDetail = async () => {
+    useEffect(() => {
+        fetchHotelDetail()
+    }, [hotelId])
+    // 获取酒店详情
+    const fetchHotelDetail = useCallback(async () => {
         if (!hotelId) return
         
         // 重置分页状态
         setCurrentPage(1)
         setHasMore(true)
         setLoading(true)
-        
         try {
             // 调用接口获取酒店详情
             console.log(`获取酒店详情:hotelId:${hotelId}`)
@@ -79,7 +77,7 @@ export default function Index() {
             if(error.data){
                 console.log('酒店详情获取失败，但是返回了数据，使用返回数据')
                 setHotelDetail(error.data)
-                setRooms(error.data.hotelRoom || [])
+                setRooms(error.data.hotelRooms || [])
             }else{
             Taro.showToast({
                 title: '加载酒店信息失败，使用默认数据',
@@ -93,7 +91,7 @@ export default function Index() {
             setLoading(false)
             setRefreshing(false)
         }
-    }
+    },[hotelId])
     
     // 使用硬编码数据作为备用
     const useHardcodedData = () => {
@@ -187,11 +185,12 @@ export default function Index() {
     }
 
     // 处理预订
-    const handleBooking = (room) => {
+    const handleBooking = (room:RoomParams) => {
         Taro.showToast({
             title: `预订${room.roomName}`,
             icon: 'success'
         })}
+
     // 拨打酒店电话
     const handleCall = () => {
         Taro.makePhoneCall({
